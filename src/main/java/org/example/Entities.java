@@ -10,32 +10,42 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 
 import java.awt.*;
+import java.util.Random;
 
 import static org.example.AddedLogicClass.randomSpawnVector;
 
 
 
 public class Entities implements EntityFactory {
-    InitSettings initSettings = new InitSettings();
+    private final String[] enemyTextures = {"enemy_1.png", "enemy_2.png", "enemy_3.png", "enemy_4.png"}; //enemy textures
+    private final double[][] enemyScales = {{0.025, 0.025}, {0.05, 0.05}, {0.12, 0.12}, {0.12, 0.12}}; //scales for enemies
     @Spawns("enemy")
-    public Entity newEnemy(SpawnData data) {
+    public Entity spawnEnemy(SpawnData data) {
+        int textureIndex = new Random().nextInt(enemyTextures.length);
+        String texture = enemyTextures[textureIndex];
+        double[] scale = enemyScales[textureIndex];
+
         Point2D velocity = new Point2D(randomSpawnVector(), 0);
         Entity entity = FXGL.entityBuilder(data)
-                .view("enemy_1.png")
-                .scale(0.025, 0.025)
+                .view(texture)
+                .scale(scale[0], scale[1])
                 .collidable()
-                .with(new ProjectileComponent(velocity, 200)) // PORUSZANIE SIĘ PO WEKTORZE X,Y
+                .with(new ProjectileComponent(velocity, 200))
                 .buildAndAttach();
+
         if (velocity.getX() < 0) {
             entity.setRotation(-1);
         }
-        entity.addComponent(new EnemyControl());
+
+        entity.addComponent(new EnemyControlOffScreen());
+
         return entity;
     }
 
 
 
-    private static class EnemyControl extends com.almasb.fxgl.entity.component.Component {
+
+    private static class EnemyControlOffScreen extends com.almasb.fxgl.entity.component.Component {
         @Override
         public void onUpdate(double tpf) {
             Point2D newPos = entity.getPosition();

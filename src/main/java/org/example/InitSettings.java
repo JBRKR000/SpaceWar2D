@@ -13,11 +13,10 @@ import static com.almasb.fxgl.dsl.FXGLForKtKt.getAppHeight;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getAppWidth;
 
 public class InitSettings extends GameApplication {
-    Duration FPS = new Duration(1.0/60.0);
     private int width = 800;
     private int height = 600;
     private int enemyCount = 0;
-    private final int MAX_ENEMIES = 10;
+    private final int MAX_ENEMIES = 5;
     public void initSettings(GameSettings settings){
         settings.setWidth(width);
         settings.setHeight(height);
@@ -26,13 +25,6 @@ public class InitSettings extends GameApplication {
         settings.setTitle("Game App");
 
     }
-    public int getWidthScreen(){
-        return width;
-    }
-
-
-
-
     @Override
     protected void initGame() { //initial entities & more
         FXGL.getGameWorld().addEntityFactory(new Entities()); //dodaje wszystkie entity do świata
@@ -45,6 +37,12 @@ public class InitSettings extends GameApplication {
                     enemyCount++;
                 }
             }, Duration.seconds(1));
+
+            FXGL.run(()->{
+                FXGL.spawn("simpleLaser", FXGLMath.randomPoint(
+                        new Rectangle2D(0,0,getAppWidth(),(double) getAppHeight() /2)
+                ));
+            },Duration.seconds(1));
 
     }
 }

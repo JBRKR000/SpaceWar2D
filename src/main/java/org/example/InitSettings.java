@@ -1,9 +1,12 @@
 package org.example;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.scene.FXGLMenu;
+import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.EntityWorldListener;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
@@ -25,7 +28,20 @@ public class InitSettings extends GameApplication {
         settings.setTitle("Game App");
         settings.setVersion("0.1b");
         settings.setTicksPerSecond(TICKS_PER_SECOND/150);
+        settings.setMainMenuEnabled(false);
+        /*
+        settings.setSceneFactory(new SceneFactory() {
+            @Override
+            public FXGLMenu newMainMenu() {
+                return new MainMenu();
+            }
+        });
+        */
+
     }
+
+
+
     @Override
     protected void initInput() {
         onKey(KeyCode.RIGHT, () -> {
@@ -46,20 +62,18 @@ public class InitSettings extends GameApplication {
             return Unit.INSTANCE;
         });
         onKeyDown(KeyCode.SPACE, () -> {
-            spacePressed = true;
-            FXGL.run(() -> {
-                player.getComponent(PlayerComponent.class).shoot();
-                spacePressed = false;
-            }, Duration.seconds(0.25));
-                return  Unit.INSTANCE;});
+            player.getComponent(PlayerComponent.class).shoot();
+            return Unit.INSTANCE;
+        });
     }
     @Override
     protected void initGame() {
         FXGL.getGameWorld().addEntityFactory(new Entities());
         spawn("background");
-
         player = FXGL.spawn("player", (double)getAppWidth()/2-45, 500);
         spawnEnemies();
+
+
 
     }
     private void spawnEnemies() {
@@ -72,11 +86,15 @@ public class InitSettings extends GameApplication {
             }
         }, Duration.seconds(1));
     }
-    public void spawn_shoot_1(){
-                FXGL.spawn("enemy", FXGLMath.randomPoint(
-                        new Rectangle2D(0, 0, getAppWidth(), (double) getAppHeight() / 2)
-                ));
-                enemyCount++;
-
+    @Override
+    protected void initPhysics() {
+        System.out.println("Checking");
+        onCollisionBegin(EntityType.BULLET, EntityType.ENEMY, (bullet, enemy) -> {
+            System.out.println("Collision detected between bullet and enemy");
+            bullet.removeFromWorld();
+            enemy.removeFromWorld();
+            return Unit.INSTANCE;
+        });
     }
+
 }

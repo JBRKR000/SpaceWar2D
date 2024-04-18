@@ -1,11 +1,6 @@
-# Simple SpaceWar2D game
+# Simple SpaceWar2D game [OUTDATED]
 
-
-
-
-
-
-
+Outdated version without collision
 
 ### Credits
 

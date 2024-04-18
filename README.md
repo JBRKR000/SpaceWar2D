@@ -20,5 +20,5 @@ In this game, the player assumes the role of a spaceship pilot whose objective i
 - [@Jakub Kozimor](https://www.github.com/JBRKR000)
 
 
-## Screenshots
+## Dev First Version
 ![image](https://github.com/JBRKR000/SpaceWar2D/assets/119077506/1090e9c8-4bf7-4a52-ae13-d9b68f237ec5)

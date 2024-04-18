@@ -8,6 +8,7 @@ Spacewar2D is a game based on the FXGL library for creating simple games. Credit
 
 In this game, the player assumes the role of a spaceship pilot whose objective is to defeat enemy ships. The game is developed by a single individual for hobbyist and educational purposes, aiming to enhance knowledge of the Java programming language.
 
+**Note**: All textures used are for testing purposes only and will not be used in the official version!
 
 ## License
 

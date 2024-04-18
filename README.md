@@ -10,6 +10,21 @@ In this game, the player assumes the role of a spaceship pilot whose objective i
 
 **Note**: All textures used are for testing purposes only and will not be used in the official version!
 
+
+
+Authors 👨‍💻
+-------------
+
+*   [@Jakub Kozimor](https://www.github.com/JBRKR000)
+
+Screenshots 🖼️
+---------------
+
+### Dev First Version
+
+
+![image](https://github.com/JBRKR000/SpaceWar2D/assets/119077506/1090e9c8-4bf7-4a52-ae13-d9b68f237ec5)
+
 License 📜
 ----------
 MIT License
@@ -33,16 +48,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-Authors 👨‍💻
--------------
-
-*   [@Jakub Kozimor](https://www.github.com/JBRKR000)
-
-Screenshots 🖼️
----------------
-
-### Dev First Version
-
-
-![image](https://github.com/JBRKR000/SpaceWar2D/assets/119077506/1090e9c8-4bf7-4a52-ae13-d9b68f237ec5)

@@ -1,8 +1,8 @@
-Spacewar2D
-==========
+Spacewar2D 🚀
+=============
 
-Description
------------
+Description 🎮
+--------------
 
 Spacewar2D is a game based on the FXGL library for creating simple games. Credits to the library can be found [here](https://github.com/AlmasB/FXGL).
 
@@ -10,15 +10,20 @@ In this game, the player assumes the role of a spaceship pilot whose objective i
 
 **Note**: All textures used are for testing purposes only and will not be used in the official version!
 
-## License
+License 📜
+----------
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
+Authors 👨‍💻
+-------------
 
-## Authors
+*   [@Jakub Kozimor](https://www.github.com/JBRKR000)
 
-- [@Jakub Kozimor](https://www.github.com/JBRKR000)
+Screenshots 🖼️
+---------------
 
-## Screenshots
 ### Dev First Version
+
+
 ![image](https://github.com/JBRKR000/SpaceWar2D/assets/119077506/1090e9c8-4bf7-4a52-ae13-d9b68f237ec5)

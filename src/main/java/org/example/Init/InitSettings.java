@@ -8,6 +8,7 @@ import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
 import kotlin.Unit;
 import org.example.Bullet.BulletEntity;
+import org.example.Bullet.BulletSpawner;
 import org.example.Enemy.EnemyEntity;
 import org.example.Other.Entities;
 import org.example.Other.EntityType;
@@ -25,6 +26,7 @@ public class InitSettings extends GameApplication {
     private int height = 600;
     private int maxPlayers = 5;
     private int enemyCount = 0;
+    private final BulletSpawner bulletSpawner = new BulletSpawner();
 
     public void initSettings(GameSettings settings){
         settings.setWidth(width);
@@ -43,6 +45,7 @@ public class InitSettings extends GameApplication {
             enemy.removeFromWorld();
             bullet.removeFromWorld();
             enemyCount--;
+            bulletSpawner.removeEnemy(enemy);
         });
     }
 
@@ -80,23 +83,20 @@ public class InitSettings extends GameApplication {
         FXGL.getGameWorld().addEntityFactory(new BulletEntity());
         FXGL.spawn("background");
         player = FXGL.spawn("player", (double)FXGL.getAppWidth()/2-45, 500);
-
         //SPAWN ENEMY
         run(() -> {
-            if(enemyCount < maxPlayers){
-                Entity e = FXGL.getGameWorld().create("enemy", new SpawnData(200, 100).put("angle", 0));
-                spawnWithScale(e, Duration.seconds(0)).angleProperty().set(0);
+            if (enemyCount < maxPlayers) {
+                Entity enemy = FXGL.getGameWorld().create("enemy", new SpawnData(200, 100).put("angle", 0));
+                spawnWithScale(enemy, Duration.seconds(0)).angleProperty().set(0);
                 enemyCount++;
+                bulletSpawner.addEnemy(enemy); // Dodajemy przeciwnika do BulletSpawner
             }
         }, Duration.seconds(3)); //SPAWN INTERVAL
 
-        run(() -> {
-            if(getPosOfEnemy() != null){
-                Entity b = FXGL.getGameWorld().create("enemy_bullet", new SpawnData(getPosOfEnemy()).put("angle", 0));
-                spawnWithScale(b, Duration.seconds(0)).angleProperty().set(0);
-            }
-        }, Duration.seconds(2));
-
+        // Spawnowanie pocisków od wszystkich przeciwników
+        run(bulletSpawner::spawnBulletsFromEnemies, Duration.seconds(2));
     }
 
 }
+
+

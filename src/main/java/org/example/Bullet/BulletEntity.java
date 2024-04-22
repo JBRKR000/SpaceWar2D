@@ -15,6 +15,8 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class BulletEntity implements EntityFactory {
 
+
+
     @Spawns("player_bullet")
     public Entity playerBullet(SpawnData data) {
         Point2D dir = data.get("dir");
@@ -46,7 +48,7 @@ public class BulletEntity implements EntityFactory {
                 .scale(0.45,0.45)
                 .viewWithBBox("shoot_2.png")
                 .with(new OffscreenCleanComponent())
-                .with(new ProjectileComponent(velocity, 150))
+                .with(new ProjectileComponent(velocity, 300))
                 .collidable()
                 .build();
 

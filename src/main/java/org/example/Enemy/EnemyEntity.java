@@ -9,6 +9,8 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.ui.ProgressBar;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.ObjectBinding;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.paint.Color;
@@ -21,16 +23,17 @@ import static org.example.Enemy.EnemySpawn.randomSpeed;
 
 public class EnemyEntity implements EntityFactory {
     public static Point2D pos;
+    private static final int MAX_HP = 5;
+    private ProgressBar hpView;
     @Spawns("enemy")
     public Entity newEnemy(SpawnData data) {
         final String[] enemyTextures = {"enemy_1.png", "enemy_2.png", "enemy_3.png", "enemy_4.png"};
         Random random = new Random();
         int randomIndex = random.nextInt(enemyTextures.length);
         String randomTexture = enemyTextures[randomIndex];
-        var hp = new HealthIntComponent(2);
+        var hp = new HealthIntComponent(MAX_HP);
         var hpView = new ProgressBar(false);
-        hpView.setFill(Color.LIGHTGREEN);
-        hpView.setMaxValue(2);
+        hpView.setMaxValue(MAX_HP);
         hpView.setWidth(85);
         hpView.setTranslateY(90);
         hpView.currentValueProperty().bind(hp.valueProperty());
@@ -50,10 +53,8 @@ public class EnemyEntity implements EntityFactory {
         @Override
         public void onUpdate(double tpf) {
             entity.setRotation(0);
-
         }
     }
-
     public static Point2D getPosOfEnemy() {
         return pos;
     }

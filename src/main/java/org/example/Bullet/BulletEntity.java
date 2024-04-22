@@ -39,7 +39,6 @@ public class BulletEntity implements EntityFactory {
         });
         return entity;
     }
-
     @Spawns("enemy_bullet")
     public Entity enemyBullet(SpawnData data) {
         var velocity = new Point2D(0,1);

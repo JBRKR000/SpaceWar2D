@@ -1,9 +1,12 @@
 package org.example.Init;
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
 import kotlin.Unit;
@@ -14,13 +17,16 @@ import org.example.Other.Entities;
 import org.example.Other.EntityType;
 import org.example.Player.PlayerComponent;
 import org.example.Player.PlayerEntity;
+import org.example.Score.ScoreEntity;
 
+import java.util.Map;
 import java.util.Random;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 import static com.sun.javafx.animation.TickCalculation.TICKS_PER_SECOND;
 import static org.example.Enemy.EnemyEntity.getPosOfEnemy;
+
 
 public class InitSettings extends GameApplication {
 
@@ -31,13 +37,13 @@ public class InitSettings extends GameApplication {
     private int enemyCount = 0;
     private final BulletSpawner bulletSpawner = new BulletSpawner();
 
-    public void initSettings(GameSettings settings){
+    public void initSettings(GameSettings settings) {
         settings.setWidth(width);
         settings.setHeight(height);
         settings.setGameMenuEnabled(true);
         settings.setTitle("Game App");
         settings.setVersion("0.2b");
-        settings.setTicksPerSecond(TICKS_PER_SECOND/100);
+        settings.setTicksPerSecond(TICKS_PER_SECOND / 100);
         settings.setMainMenuEnabled(false);
 
     }
@@ -45,10 +51,33 @@ public class InitSettings extends GameApplication {
     @Override
     protected void initPhysics() {
         onCollisionBegin(EntityType.PLAYER_BULLET, EntityType.ENEMY, (bullet, enemy) -> {
-            enemy.removeFromWorld();
-            bullet.removeFromWorld();
-            enemyCount--;
-            bulletSpawner.removeEnemy(enemy);
+            var hp = enemy.getComponent(HealthIntComponent.class);
+
+            if (hp.getValue() > 1) {
+                bullet.removeFromWorld();
+                hp.damage(1);
+            } else {
+                enemy.removeFromWorld();
+                bullet.removeFromWorld();
+                enemyCount--;
+                bulletSpawner.removeEnemy(enemy);
+                FXGL.spawn("scoreText", new SpawnData(enemy.getX(), enemy.getY()).put("text", "+100"));
+                FXGL.inc("score", +100);
+            }
+        });
+
+        onCollisionBegin(EntityType.ENEMY_BULLET, EntityType.PLAYER, (bullet, player) -> {
+            var hp = player.getComponent(HealthIntComponent.class);
+            if (hp.getValue() > 1) {
+                bullet.removeFromWorld();
+                hp.damage(1);
+            } else {
+                player.removeFromWorld();
+                bullet.removeFromWorld();
+                FXGL.getGameController().startNewGame();
+                System.out.println();
+                enemyCount = 0;
+            }
         });
     }
 
@@ -78,6 +107,12 @@ public class InitSettings extends GameApplication {
     }
 
     @Override
+    protected void initGameVars(Map<String, Object> vars) {
+        vars.put("score", 0);
+        vars.put("lives", 3);
+    }
+
+    @Override
     protected void initGame() {
         Random random = new Random();
         FXGL.getSettings().setGlobalSoundVolume(0.1);
@@ -85,8 +120,9 @@ public class InitSettings extends GameApplication {
         FXGL.getGameWorld().addEntityFactory(new EnemyEntity());
         FXGL.getGameWorld().addEntityFactory(new PlayerEntity());
         FXGL.getGameWorld().addEntityFactory(new BulletEntity());
+        FXGL.getGameWorld().addEntityFactory(new ScoreEntity());
         FXGL.spawn("background");
-        player = FXGL.spawn("player", (double)FXGL.getAppWidth()/2-45, 500);
+        player = FXGL.spawn("player", (double) FXGL.getAppWidth() / 2 - 45, 500);
         //SPAWN ENEMY
         run(() -> {
             if (enemyCount < maxPlayers) {
@@ -100,6 +136,23 @@ public class InitSettings extends GameApplication {
         run(bulletSpawner::spawnBulletsFromEnemies, Duration.seconds(1));
     }
 
+    @Override
+    protected void initUI() {
+        var text = FXGL.getUIFactoryService().newText("", 24);
+        text.textProperty().bind(FXGL.getip("score").asString("Score: [%d]"));
+        FXGL.getWorldProperties().addListener("score", (prev, now) -> {
+            FXGL.animationBuilder()
+                    .duration(Duration.seconds(0.5))
+                    .interpolator(Interpolators.BOUNCE.EASE_OUT())
+                    .repeat(2)
+                    .autoReverse(true)
+                    .scale(text)
+                    .from(new Point2D(1, 1))
+                    .to(new Point2D(1.2, 1.2))
+                    .buildAndPlay();
+        });
+        FXGL.addUINode(text, 20, 50);
+    }
 }
 
 

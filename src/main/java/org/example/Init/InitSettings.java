@@ -18,14 +18,11 @@ import org.example.Other.EntityType;
 import org.example.Player.PlayerComponent;
 import org.example.Player.PlayerEntity;
 import org.example.Score.ScoreEntity;
-
 import java.util.Map;
 import java.util.Random;
-
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 import static com.sun.javafx.animation.TickCalculation.TICKS_PER_SECOND;
-import static org.example.Enemy.EnemyEntity.getPosOfEnemy;
 
 
 public class InitSettings extends GameApplication {
@@ -57,6 +54,7 @@ public class InitSettings extends GameApplication {
                 bullet.removeFromWorld();
                 hp.damage(1);
             } else {
+                FXGL.play("enemy_boom.wav");
                 enemy.removeFromWorld();
                 bullet.removeFromWorld();
                 enemyCount--;
@@ -102,8 +100,14 @@ public class InitSettings extends GameApplication {
         });
         onKeyDown(KeyCode.SPACE, () -> {
             player.getComponent(PlayerComponent.class).shoot();
+            FXGL.play("shoot_player.wav");
             return Unit.INSTANCE;
         });
+        onKeyDown(KeyCode.F3, () -> {
+            System.out.println("DEBUG MODE ON: GODMODE IS NOW ON");
+            return Unit.INSTANCE;
+        });
+
     }
 
     @Override

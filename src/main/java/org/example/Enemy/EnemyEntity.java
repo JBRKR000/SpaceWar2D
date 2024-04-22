@@ -1,30 +1,20 @@
 package org.example.Enemy;
-
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
-import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.dsl.components.RandomMoveComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.ui.ProgressBar;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.ObjectBinding;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.paint.Color;
 import org.example.Other.EntityType;
-
 import java.util.Random;
-
 import static com.almasb.fxgl.dsl.FXGL.*;
-import static org.example.Enemy.EnemySpawn.randomSpeed;
 
 public class EnemyEntity implements EntityFactory {
     public static Point2D pos;
     private static final int MAX_HP = 5;
-    private ProgressBar hpView;
     @Spawns("enemy")
     public Entity newEnemy(SpawnData data) {
         final String[] enemyTextures = {"enemy_1.png", "enemy_2.png", "enemy_3.png", "enemy_4.png"};

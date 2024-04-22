@@ -1,5 +1,4 @@
 package org.example.Bullet;
-
 import com.almasb.fxgl.dsl.components.*;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
@@ -7,7 +6,6 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.TimeComponent;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import org.example.Other.EntityType;
 
 import static com.almasb.fxgl.dsl.FXGL.*;

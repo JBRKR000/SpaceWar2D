@@ -14,6 +14,9 @@ import org.example.Other.Entities;
 import org.example.Other.EntityType;
 import org.example.Player.PlayerComponent;
 import org.example.Player.PlayerEntity;
+
+import java.util.Random;
+
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 import static com.sun.javafx.animation.TickCalculation.TICKS_PER_SECOND;
@@ -76,6 +79,7 @@ public class InitSettings extends GameApplication {
 
     @Override
     protected void initGame() {
+        Random random = new Random();
         FXGL.getSettings().setGlobalSoundVolume(0.1);
         FXGL.getGameWorld().addEntityFactory(new Entities());
         FXGL.getGameWorld().addEntityFactory(new EnemyEntity());
@@ -89,12 +93,11 @@ public class InitSettings extends GameApplication {
                 Entity enemy = FXGL.getGameWorld().create("enemy", new SpawnData(200, 100).put("angle", 0));
                 spawnWithScale(enemy, Duration.seconds(0)).angleProperty().set(0);
                 enemyCount++;
-                bulletSpawner.addEnemy(enemy); // Dodajemy przeciwnika do BulletSpawner
+                bulletSpawner.addEnemy(enemy);
             }
-        }, Duration.seconds(3)); //SPAWN INTERVAL
+        }, Duration.seconds(3));
 
-        // Spawnowanie pocisków od wszystkich przeciwników
-        run(bulletSpawner::spawnBulletsFromEnemies, Duration.seconds(2));
+        run(bulletSpawner::spawnBulletsFromEnemies, Duration.seconds(1));
     }
 
 }

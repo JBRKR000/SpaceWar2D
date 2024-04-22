@@ -6,9 +6,11 @@ import com.almasb.fxgl.entity.SpawnData;
 import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class BulletSpawner {
-
+    Random random = new Random();
+    private final double maxDelay = 2.5;
     private final List<Entity> enemies = new ArrayList<>();
 
     public BulletSpawner() {
@@ -25,11 +27,18 @@ public class BulletSpawner {
     }
 
     public void spawnBulletsFromEnemies() {
+
         for (Entity enemy : enemies) {
-            Entity bullet = FXGL.getGameWorld().create("enemy_bullet", new SpawnData(enemy.getX(), enemy.getY()).put("angle", 0));
-            bullet.setScaleX(1.1);
-            bullet.setScaleY(1.1);
-            FXGL.getGameWorld().addEntity(bullet);
+            double delay = random.nextDouble() * maxDelay;
+            FXGL.getGameTimer().runOnceAfter(() -> {
+                if (FXGL.getGameWorld().getEntities().contains(enemy)) {
+                    Entity bullet = FXGL.getGameWorld().create("enemy_bullet", new SpawnData(enemy.getX(), enemy.getY()).put("angle", 0));
+                    bullet.setScaleX(1.1);
+                    bullet.setScaleY(1.1);
+                    FXGL.getGameWorld().addEntity(bullet);
+                }
+            }, Duration.seconds(delay));
         }
     }
+
 }

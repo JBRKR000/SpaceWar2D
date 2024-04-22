@@ -48,7 +48,7 @@ public class BulletEntity implements EntityFactory {
                 .scale(0.45,0.45)
                 .viewWithBBox("shoot_2.png")
                 .with(new OffscreenCleanComponent())
-                .with(new ProjectileComponent(velocity, 300))
+                .with(new ProjectileComponent(velocity, 150))
                 .collidable()
                 .build();
 

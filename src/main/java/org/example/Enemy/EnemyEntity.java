@@ -37,7 +37,7 @@ public class EnemyEntity implements EntityFactory {
         Entity entity = entityBuilder(data)
                 .type(EntityType.ENEMY)
                 .viewWithBBox(randomTexture)
-                //.view(hpView)
+                .view(hpView)
                 .with(hp)
                 .with(new RandomMoveComponent(new Rectangle2D(0, 0, getAppWidth(), ((double) getAppHeight() /2)),100))
                 .collidable()

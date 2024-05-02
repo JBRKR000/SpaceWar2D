@@ -28,7 +28,7 @@ public class PlayerEntity implements EntityFactory {
         hpView.setMaxValue(currentHP);
         hpView.setWidth(50);
         hpView.setTranslateY(60);
-        hpView.setTranslateX(13);
+        hpView.setTranslateX(-4);
         hpView.currentValueProperty().bind(hp.valueProperty());
         Entity entity = entityBuilder(data)
                 .type(EntityType.PLAYER)

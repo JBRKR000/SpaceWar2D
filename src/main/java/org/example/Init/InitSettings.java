@@ -2,6 +2,8 @@ package org.example.Init;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.scene.FXGLMenu;
+import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
@@ -18,6 +20,7 @@ import org.example.Other.EntityType;
 import org.example.Player.PlayerComponent;
 import org.example.Player.PlayerEntity;
 import org.example.Score.ScoreEntity;
+import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.Random;
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -27,6 +30,7 @@ import static com.sun.javafx.animation.TickCalculation.TICKS_PER_SECOND;
 
 public class InitSettings extends GameApplication {
 
+    private static int isDebugEnabled = 0;
     private Entity player;
     private int width = 800;
     private int height = 600;
@@ -41,7 +45,15 @@ public class InitSettings extends GameApplication {
         settings.setTitle("Game App");
         settings.setVersion("0.2b");
         settings.setTicksPerSecond(TICKS_PER_SECOND / 100);
-        settings.setMainMenuEnabled(false);
+        settings.setMainMenuEnabled(true);
+        settings.setSceneFactory(new SceneFactory() {
+            @NotNull
+            @Override
+            public FXGLMenu newMainMenu() {
+
+                return new org.example.MainMenu.MainMenu();
+            }
+        });
 
     }
 
@@ -69,10 +81,13 @@ public class InitSettings extends GameApplication {
             if (hp.getValue() > 1) {
                 bullet.removeFromWorld();
                 hp.damage(1);
+                FXGL.play("player_gets_hit.wav");
             } else {
+                FXGL.play("player_explodes.wav");
                 player.removeFromWorld();
                 bullet.removeFromWorld();
-                FXGL.getGameController().startNewGame();
+
+                FXGL.getGameController().gotoMainMenu();
                 System.out.println();
                 enemyCount = 0;
             }
@@ -81,6 +96,7 @@ public class InitSettings extends GameApplication {
 
     @Override
     protected void initInput() {
+
         onKey(KeyCode.RIGHT, () -> {
             player.getComponent(PlayerComponent.class).moveRight();
             return Unit.INSTANCE;
@@ -104,7 +120,8 @@ public class InitSettings extends GameApplication {
             return Unit.INSTANCE;
         });
         onKeyDown(KeyCode.F3, () -> {
-            System.out.println("DEBUG MODE ON: GODMODE IS NOW ON");
+            isDebugEnabled++;
+            System.out.println("DEBUG MODE IS ON");
             return Unit.INSTANCE;
         });
 
@@ -138,6 +155,7 @@ public class InitSettings extends GameApplication {
         }, Duration.seconds(3));
 
         run(bulletSpawner::spawnBulletsFromEnemies, Duration.seconds(1));
+
     }
 
     @Override

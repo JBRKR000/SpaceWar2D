@@ -7,18 +7,13 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.ui.ProgressBar;
-import javafx.scene.input.KeyCode;
-import kotlin.Unit;
 import org.example.Other.EntityType;
-
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
-import static com.almasb.fxgl.dsl.FXGLForKtKt.onKeyDown;
 
 public class PlayerEntity implements EntityFactory {
-
-    private static final int MAX_HP = 10;
-    private static final int DEBUG_HP = -1;
+    private static final int MAX_HP = 20;
     private int currentHP = MAX_HP;
+
 
 
     @Spawns("player")
@@ -30,6 +25,7 @@ public class PlayerEntity implements EntityFactory {
         hpView.setTranslateY(60);
         hpView.setTranslateX(-4);
         hpView.currentValueProperty().bind(hp.valueProperty());
+
         Entity entity = entityBuilder(data)
                 .type(EntityType.PLAYER)
                 .viewWithBBox("player.png")
@@ -38,10 +34,9 @@ public class PlayerEntity implements EntityFactory {
                 .with(new PlayerComponent())
                 .collidable()
                 .build();
+
         return entity;
     }
-
-
-
-
 }
+
+

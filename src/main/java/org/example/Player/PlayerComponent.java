@@ -34,5 +34,4 @@ public class PlayerComponent extends Component {
         spawn("player_bullet",new SpawnData(entity.getX()-20,entity.getY()-30).put("dir",dir.toPoint2D()));
     }
 
-
 }

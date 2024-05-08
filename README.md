@@ -25,6 +25,13 @@ Screenshots 🖼️
 
 ![image](https://github.com/JBRKR000/SpaceWar2D/assets/119077506/1090e9c8-4bf7-4a52-ae13-d9b68f237ec5)
 
+
+
+* Dev Updated Version (02.05.2024)
+  
+![image](https://github.com/JBRKR000/SpaceWar2D/assets/119077506/16fae9cb-02c0-4b6d-a2e1-99a8ab57fdb5)
+
+
 License 📜
 ----------
 MIT License

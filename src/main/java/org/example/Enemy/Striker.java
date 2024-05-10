@@ -11,6 +11,8 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import org.example.Other.EntityType;
 
+import java.util.Random;
+
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class Striker implements EntityFactory {
@@ -33,7 +35,7 @@ public class Striker implements EntityFactory {
                 .with(new RandomMoveComponent(new Rectangle2D(0, 0, getAppWidth(), ((double) getAppHeight() /2)),100))
                 .collidable()
                 .build();
-        entity.addComponent(new Striker.EnemySetAngle());
+        entity.addComponent(new EnemySetAngle());
         pos = new Point2D(entity.getX(),entity.getY());
         return entity;
     }

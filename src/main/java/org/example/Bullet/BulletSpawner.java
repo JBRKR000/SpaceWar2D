@@ -1,9 +1,12 @@
 package org.example.Bullet;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.RandomMoveComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
+import com.sun.jdi.Method;
 import javafx.util.Duration;
+import org.example.Enemy.Inferno;
 
 import java.util.*;
 
@@ -27,10 +30,12 @@ public class BulletSpawner {
 
     public void spawnBulletsFromEnemies() {
         for (Entity enemy : enemies.keySet()) {
+            double delay = FXGL.random(0.5,3); //JAK SZYBKO MAJĄ PRZECIWNICY STRZELAĆ
             FXGL.getGameTimer().runOnceAfter(() -> {
                 String type = enemies.get(enemy);
                 if (type != null && type.equals("inferno")) {
-                    if (FXGL.getGameWorld().getEntities().contains(enemy)) {
+                    RandomMoveComponent moveComponent = enemy.getComponent(RandomMoveComponent.class);
+                    if (moveComponent != null && moveComponent.getMoveSpeed() == 0) {
                         Entity bullet = FXGL.getGameWorld().create("inferno_bullet", new SpawnData(enemy.getX() + 25, enemy.getY() + 40).put("angle", 0));
                         bullet.setScaleX(1.1);
                         bullet.setScaleY(1.1);
@@ -51,6 +56,7 @@ public class BulletSpawner {
                         bullet.setScaleX(1.1);
                         bullet.setScaleY(1.1);
                         FXGL.getGameWorld().addEntity(bullet);
+                        bullet.setVisible(false);
                     }
                 }
                 if (type != null && type.equals("eclipse")) {
@@ -59,9 +65,10 @@ public class BulletSpawner {
                         bullet.setScaleX(1.1);
                         bullet.setScaleY(1.1);
                         FXGL.getGameWorld().addEntity(bullet);
+
                     }
                 }
-            }, Duration.seconds(1));
+            }, Duration.seconds(delay));
         }
     }
 

@@ -8,8 +8,16 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.input.Input;
+import com.almasb.fxgl.input.MouseTrigger;
+import com.almasb.fxgl.input.Trigger;
+import com.almasb.fxgl.input.TriggerListener;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import kotlin.Unit;
 import org.example.Bullet.*;
@@ -18,6 +26,7 @@ import org.example.Enemy.Eclipse;
 import org.example.Enemy.Inferno;
 import org.example.Enemy.Striker;
 import org.example.Enemy.Void;
+import org.example.MainMenu.MainMenu;
 import org.example.Other.Entities;
 import org.example.Other.EntityType;
 import org.example.Player.PlayerComponent;
@@ -26,8 +35,6 @@ import org.example.Score.ScoreEntity;
 import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 import static com.sun.javafx.animation.TickCalculation.TICKS_PER_SECOND;
@@ -44,7 +51,7 @@ public class InitSettings extends GameApplication {
     private int enemiesDefeated = 0;
     private int width = 800;
     private int height = 600;
-    private int maxPlayers = 8;
+    private int maxPlayers = 5;
     private int enemyCount = 0;
     private final BulletSpawner bulletSpawner = new BulletSpawner();
 
@@ -61,7 +68,7 @@ public class InitSettings extends GameApplication {
             @Override
             public FXGLMenu newMainMenu() {
 
-                return new org.example.MainMenu.MainMenu();
+                return new MainMenu();
             }
         });
 
@@ -117,8 +124,6 @@ public class InitSettings extends GameApplication {
 
     @Override
     protected void initInput() {
-
-
         onKey(KeyCode.RIGHT, () -> {
             player.getComponent(PlayerComponent.class).moveRight();
             return Unit.INSTANCE;
@@ -197,15 +202,20 @@ public class InitSettings extends GameApplication {
                 }
             } else {
                 if (enemyCount == 0) {
+                    var waveCompletedText = FXGL.getUIFactoryService().newText("Wave Completed!", Color.WHITE, 36);
+                    waveCompletedText.setTranslateX(100);
+                    waveCompletedText.setTranslateY(100);
+                    //FXGL.getGameScene().addUINode(waveCompletedText);
                     FXGL.getGameController().gotoMainMenu();
                     System.out.println("WAVE " + wave + " COMPLETED!");
                 }
             }
 
 
-        }, Duration.seconds(3));
+        }, Duration.seconds(1));
+            run(bulletSpawner::spawnBulletsFromEnemies, Duration.seconds(3));
 
-        run(bulletSpawner::spawnBulletsFromEnemies, Duration.seconds(random.nextDouble()+diff));
+
 
     }
 

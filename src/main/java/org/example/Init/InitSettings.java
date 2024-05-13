@@ -8,15 +8,8 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.MouseTrigger;
-import com.almasb.fxgl.input.Trigger;
-import com.almasb.fxgl.input.TriggerListener;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseDragEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import kotlin.Unit;
@@ -175,17 +168,30 @@ public class InitSettings extends GameApplication {
         Random random = new Random();
         FXGL.getSettings().setGlobalSoundVolume(0.1);
         FXGL.getGameWorld().addEntityFactory(new Entities());
+
         FXGL.getGameWorld().addEntityFactory(new PlayerEntity());
+
         FXGL.getGameWorld().addEntityFactory(new PlayerBulletEntity());
+
         FXGL.getGameWorld().addEntityFactory(new ScoreEntity());
+
         FXGL.getGameWorld().addEntityFactory(new Eclipse());
+
         FXGL.getGameWorld().addEntityFactory(new Inferno());
+
         FXGL.getGameWorld().addEntityFactory(new Striker());
+
         FXGL.getGameWorld().addEntityFactory(new Void());
+
         FXGL.getGameWorld().addEntityFactory(new EclipseBullet());
+
         FXGL.getGameWorld().addEntityFactory(new StrikerBullet());
+
         FXGL.getGameWorld().addEntityFactory(new VoidBullet());
+        FXGL.getGameWorld().addEntityFactory(new VoidLaser());
+
         FXGL.getGameWorld().addEntityFactory(new InfernoBullet());
+
 
         FXGL.spawn("background");
         player = FXGL.spawn("player", (double) FXGL.getAppWidth() / 2 - 45, 500);

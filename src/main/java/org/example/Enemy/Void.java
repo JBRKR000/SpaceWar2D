@@ -1,5 +1,6 @@
 package org.example.Enemy;
 
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.dsl.components.RandomMoveComponent;
 import com.almasb.fxgl.entity.Entity;
@@ -9,16 +10,19 @@ import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.ui.ProgressBar;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.util.Duration;
 import org.example.Other.EntityType;
+
+import java.util.Random;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class Void implements EntityFactory {
+    public boolean shoot = false;
     public static Point2D pos;
     private static final int MAX_HP = 3;
     @Spawns("void")
     public Entity newEnemy(SpawnData data) {
-
         var hp = new HealthIntComponent(MAX_HP);
         var hpView = new ProgressBar(false);
         hpView.setMaxValue(MAX_HP);
@@ -30,11 +34,22 @@ public class Void implements EntityFactory {
                 .viewWithBBox("enemy_4.png")
                 .view(hpView)
                 .with(hp)
-                .with(new RandomMoveComponent(new Rectangle2D(0, 0, getAppWidth(), ((double) getAppHeight() /2)),100))
+                .with(new RandomMoveComponent(new Rectangle2D(0, 0, getAppWidth(), ((double) getAppHeight() /2)),0))
                 .collidable()
                 .build();
         entity.addComponent(new Void.EnemySetAngle());
-        pos = new Point2D(entity.getX(),entity.getY());
+        FXGL.run(()->{
+            try{
+                if(entity.getComponent(RandomMoveComponent.class) != null){
+                    Random random = new Random();
+                    int randomspeed = random.nextInt(2) * 100;
+                    shoot = randomspeed != 300;
+                    entity.getComponent(RandomMoveComponent.class).setMoveSpeed(randomspeed);
+                }
+            }catch (Exception e){
+                //
+            }
+        }, Duration.seconds(2));
         return entity;
     }
     private static class EnemySetAngle extends com.almasb.fxgl.entity.component.Component {
@@ -43,7 +58,5 @@ public class Void implements EntityFactory {
             entity.setRotation(0);
         }
     }
-    public static Point2D getPosOfEnemy() {
-        return pos;
-    }
+
 }

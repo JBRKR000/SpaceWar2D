@@ -23,7 +23,6 @@ public class Inferno implements EntityFactory {
     private static final int MAX_HP = 7;
     @Spawns("inferno")
     public Entity newEnemy(SpawnData data) {
-
         var hp = new HealthIntComponent(MAX_HP);
         var hpView = new ProgressBar(false);
         hpView.setMaxValue(MAX_HP);

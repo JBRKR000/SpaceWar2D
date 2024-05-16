@@ -29,6 +29,11 @@ public class BulletSpawner {
         enemies.remove(enemy);
     }
 
+    public void spawnHealthBonus() {
+
+    }
+
+
     public void spawnBulletsFromEnemies() {
         for (Entity enemy : enemies.keySet()) {
             double delay = FXGL.random(0.5,3); //JAK SZYBKO MAJĄ PRZECIWNICY STRZELAĆ

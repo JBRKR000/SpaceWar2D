@@ -4,15 +4,18 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
+import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import kotlin.Unit;
+import org.example.Bonus.BonusSpawner;
+import org.example.Bonus.CoinBonus;
+import org.example.Bonus.HealthBonus;
 import org.example.Bullet.*;
 import org.example.Debug.DebugWindow;
 import org.example.Enemy.Eclipse;
@@ -26,8 +29,12 @@ import org.example.Player.PlayerComponent;
 import org.example.Player.PlayerEntity;
 import org.example.Score.ScoreEntity;
 import org.jetbrains.annotations.NotNull;
+
+import java.nio.channels.FileLock;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 import static com.sun.javafx.animation.TickCalculation.TICKS_PER_SECOND;
@@ -39,18 +46,22 @@ public class InitSettings extends GameApplication {
     public static boolean isDebugEnabled = false;
     private Entity player;
     private int godmode = 0;
-    private int wave = 1;
-    private int enemiesToDestroy = 10;
+    public static int wave = 1;  // Current wave
+    public static int enemiesToDestroy = 10;  // Enemies to defeat per wave (adjustable)
     private int enemiesDefeated = 0;
-    private int width = 800;
-    private int height = 600;
-    private int maxPlayers = 5;
     private int enemyCount = 0;
     private final BulletSpawner bulletSpawner = new BulletSpawner();
+    private Music backgroundMusic;
+    private int maxPlayers = 5;
+    public String enemyType;
+    public static boolean isCoinSpawned = false;
+    public static boolean isHealthSpawned = false;
+    public static boolean isEnemySpawned = false;
+    public int bonus;
 
     public void initSettings(GameSettings settings) {
-        settings.setWidth(width);
-        settings.setHeight(height);
+        settings.setWidth(800);
+        settings.setHeight(600);
         settings.setGameMenuEnabled(true);
         settings.setTitle("Game App");
         settings.setVersion("0.2b");
@@ -60,11 +71,9 @@ public class InitSettings extends GameApplication {
             @NotNull
             @Override
             public FXGLMenu newMainMenu() {
-
                 return new MainMenu();
             }
         });
-
     }
     public void toggleGodMode() {
         godmode = 1;
@@ -77,12 +86,42 @@ public class InitSettings extends GameApplication {
 
     @Override
     protected void initPhysics() {
+        AtomicInteger randomHealth = new AtomicInteger();
+        run(()->{
+            if(wave < 3){
+                randomHealth.set(FXGL.random(1, 7));
+            }
+            if(wave >= 3 && wave < 8){
+                randomHealth.set(FXGL.random(1, 10));
+            }
+            if(wave > 8 && wave < 11){
+                randomHealth.set(FXGL.random(1, 12));
+            }
+
+        },Duration.seconds(0.1));
+
+
+        AtomicInteger randomCoin = new AtomicInteger();
+        run(()->{
+            if(wave < 3){
+                randomCoin.set(FXGL.random(1, 5));
+            }
+            if(wave >= 3 && wave < 8){
+                randomCoin.set(FXGL.random(1, 8));
+            }
+            if(wave > 8 && wave < 11){
+                randomCoin.set(FXGL.random(1, 10));
+            }
+
+        },Duration.seconds(0.1));
+
         onCollisionBegin(EntityType.PLAYER_BULLET, EntityType.ENEMY, (bullet, enemy) -> {
             var hp = enemy.getComponent(HealthIntComponent.class);
 
             if (hp.getValue() > 1) {
                 bullet.removeFromWorld();
                 hp.damage(1);
+                FXGL.play("enemy_hit.wav");
             } else {
                 FXGL.play("enemy_boom.wav");
                 enemy.removeFromWorld();
@@ -92,6 +131,16 @@ public class InitSettings extends GameApplication {
                 bulletSpawner.removeEnemy(enemy);
                 FXGL.spawn("scoreText", new SpawnData(enemy.getX(), enemy.getY()).put("text", "+100"));
                 FXGL.inc("score", +100);
+                isEnemySpawned = false;
+
+                    if(randomHealth.get() == 2 && randomCoin.get() != 1) {
+                        FXGL.spawn("health_bonus", new SpawnData(enemy.getX(), enemy.getY()));
+                        isHealthSpawned = true;
+                    }
+                    if(randomCoin.get() == 1 && randomHealth.get() != 2) {
+                        FXGL.spawn("coin_bonus", new SpawnData(enemy.getX(), enemy.getY()));
+                        isCoinSpawned = true;
+                    }
             }
         });
 
@@ -113,6 +162,34 @@ public class InitSettings extends GameApplication {
                 }
             }
         });
+
+        onCollisionBegin(EntityType.HEALTH, EntityType.PLAYER, (health, player) -> {
+            if(godmode == 0) {
+                var hp = player.getComponent(HealthIntComponent.class);
+                if (hp.getValue() > 20) {
+                    health.removeFromWorld();
+                    isHealthSpawned = false;
+                }else{
+                    health.removeFromWorld();
+                    isHealthSpawned = false;
+                    hp.setValue(hp.getValue()+2);
+                    FXGL.spawn("scoreText", new SpawnData(health.getX(), health.getY()).put("text", "+15"));
+                    FXGL.inc("score", +15);
+                    FXGL.play("health.wav");
+                }
+            }
+        });
+        onCollisionBegin(EntityType.COIN, EntityType.PLAYER, (coin, player) -> {
+            if(godmode == 0) {
+                    coin.removeFromWorld();
+                    isCoinSpawned = false;
+                    FXGL.spawn("scoreText", new SpawnData(coin.getX(), coin.getY()).put("text", "+" + bonus));
+                    FXGL.inc("score", +bonus);
+                    FXGL.play("coin.wav");
+
+            }
+        });
+
     }
 
     @Override
@@ -162,40 +239,38 @@ public class InitSettings extends GameApplication {
         vars.put("lives", 3);
     }
 
+
     @Override
     protected void initGame() {
-        double diff = 1.5;
         Random random = new Random();
         FXGL.getSettings().setGlobalSoundVolume(0.1);
         FXGL.getGameWorld().addEntityFactory(new Entities());
-
         FXGL.getGameWorld().addEntityFactory(new PlayerEntity());
-
         FXGL.getGameWorld().addEntityFactory(new PlayerBulletEntity());
-
         FXGL.getGameWorld().addEntityFactory(new ScoreEntity());
-
         FXGL.getGameWorld().addEntityFactory(new Eclipse());
-
         FXGL.getGameWorld().addEntityFactory(new Inferno());
-
         FXGL.getGameWorld().addEntityFactory(new Striker());
-
         FXGL.getGameWorld().addEntityFactory(new Void());
-
         FXGL.getGameWorld().addEntityFactory(new EclipseBullet());
-
         FXGL.getGameWorld().addEntityFactory(new StrikerBullet());
-
         FXGL.getGameWorld().addEntityFactory(new VoidBullet());
         FXGL.getGameWorld().addEntityFactory(new VoidLaser());
-
         FXGL.getGameWorld().addEntityFactory(new InfernoBullet());
+        FXGL.getGameWorld().addEntityFactory(new HealthBonus());
+        FXGL.getGameWorld().addEntityFactory(new CoinBonus());
+        
 
+        backgroundMusic = FXGL.getAssetLoader().loadMusic("CosmicConquest.mp3");
+        backgroundMusic.getAudio().setVolume(0.06);
+        backgroundMusic.getAudio().play();
 
         FXGL.spawn("background");
         player = FXGL.spawn("player", (double) FXGL.getAppWidth() / 2 - 45, 500);
-        //SPAWN ENEMY
+
+
+        FXGL.getGameTimer().runOnceAfter(() -> FXGL.getDialogService().showMessageBox("Wave " + wave + " Started!"), Duration.seconds(1));
+
         run(() -> {
 
             if (enemiesDefeated < enemiesToDestroy) {
@@ -205,23 +280,28 @@ public class InitSettings extends GameApplication {
                     spawnWithScale(enemy, Duration.seconds(0)).angleProperty().set(0);
                     enemyCount++;
                     bulletSpawner.addEnemy(enemy, picker);
+                    isEnemySpawned = true;
+                    enemyType = picker();
+                    bonus = BonusSpawner.bonusSpawner(enemyType);
                 }
             } else {
-                if (enemyCount == 0) {
-                    var waveCompletedText = FXGL.getUIFactoryService().newText("Wave Completed!", Color.WHITE, 36);
-                    waveCompletedText.setTranslateX(100);
-                    waveCompletedText.setTranslateY(100);
-                    //FXGL.getGameScene().addUINode(waveCompletedText);
-                    FXGL.getGameController().gotoMainMenu();
-                    System.out.println("WAVE " + wave + " COMPLETED!");
+                if ((FXGL.getGameWorld().getEntitiesByType(EntityType.COIN).isEmpty())&&FXGL.getGameWorld().getEntitiesByType(EntityType.HEALTH).isEmpty() &&
+                        FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY).isEmpty()) {
+                    FXGL.getGameTimer().runOnceAfter(() -> FXGL.getDialogService().showMessageBox("Wave " + (wave - 1) + " Completed!"), Duration.seconds(0));
+                    try{
+                        FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY, EntityType.ENEMY_BULLET).forEach(Entity::removeFromWorld);
+                    }catch (Exception e){
+                        System.out.println("No enemies left");
+                    }
+                    enemiesDefeated = 0;
+                    enemyCount = 0;
+                    wave++;
                 }
             }
 
 
         }, Duration.seconds(1));
-            run(bulletSpawner::spawnBulletsFromEnemies, Duration.seconds(3));
-
-
+        run(bulletSpawner::spawnBulletsFromEnemies, Duration.seconds(3));
 
     }
 
@@ -245,6 +325,8 @@ public class InitSettings extends GameApplication {
 
     public void toggleEveryEnemyHas1HP() {
     }
+
+
 }
 
 

@@ -16,12 +16,14 @@ import kotlin.Unit;
 import org.example.Bonus.BonusSpawner;
 import org.example.Bonus.CoinBonus;
 import org.example.Bonus.HealthBonus;
+import org.example.Bonus.Powerup;
 import org.example.Bullet.*;
 import org.example.Debug.DebugWindow;
 import org.example.Enemy.Eclipse;
 import org.example.Enemy.Inferno;
 import org.example.Enemy.Striker;
 import org.example.Enemy.Void;
+import org.example.GunUpdates.GunUpdateEntities;
 import org.example.MainMenu.MainMenu;
 import org.example.Other.Entities;
 import org.example.Other.EntityType;
@@ -57,7 +59,11 @@ public class InitSettings extends GameApplication {
     public static boolean isCoinSpawned = false;
     public static boolean isHealthSpawned = false;
     public static boolean isEnemySpawned = false;
+    public static boolean isPowerupSpawned = false;
     public int bonus;
+    private boolean spacebarPressed = false;
+    public static int powerup = 0;
+
 
     public void initSettings(GameSettings settings) {
         settings.setWidth(800);
@@ -115,6 +121,20 @@ public class InitSettings extends GameApplication {
 
         },Duration.seconds(0.1));
 
+        AtomicInteger randomPowerUp = new AtomicInteger();
+        run(()->{
+            if(wave < 3){
+                randomPowerUp.set(FXGL.random(1, 6));
+            }
+            if(wave >= 3 && wave < 8){
+                randomPowerUp.set(FXGL.random(1, 4));
+            }
+            if(wave > 8 && wave < 11){
+                randomPowerUp.set(FXGL.random(1, 8));
+            }
+
+        },Duration.seconds(0.1));
+
         onCollisionBegin(EntityType.PLAYER_BULLET, EntityType.ENEMY, (bullet, enemy) -> {
             var hp = enemy.getComponent(HealthIntComponent.class);
 
@@ -141,6 +161,11 @@ public class InitSettings extends GameApplication {
                         FXGL.spawn("coin_bonus", new SpawnData(enemy.getX(), enemy.getY()));
                         isCoinSpawned = true;
                     }
+                    if(randomPowerUp.get() == 3) {
+
+                        FXGL.spawn("powerup", new SpawnData(enemy.getX(), enemy.getY()));
+                        isPowerupSpawned = true;
+                    }
             }
         });
 
@@ -159,6 +184,7 @@ public class InitSettings extends GameApplication {
                     FXGL.getGameController().gotoMainMenu();
                     System.out.println();
                     enemyCount = 0;
+                    wave = 1;
                 }
             }
         });
@@ -190,6 +216,16 @@ public class InitSettings extends GameApplication {
             }
         });
 
+        onCollisionBegin(EntityType.POWERUP, EntityType.PLAYER, (powerup, player) -> {
+            if(godmode == 0) {
+                InitSettings.powerup++;
+                powerup.removeFromWorld();
+                isPowerupSpawned = false;
+                FXGL.play("powerup.wav");
+
+            }
+        });
+
     }
 
     @Override
@@ -211,8 +247,13 @@ public class InitSettings extends GameApplication {
             return Unit.INSTANCE;
         });
         onKeyDown(KeyCode.SPACE, () -> {
-            player.getComponent(PlayerComponent.class).shoot();
-            FXGL.play("shoot_player.wav");
+            if(!spacebarPressed){
+                spacebarPressed = true;
+                FXGL.run(()->{
+                    player.getComponent(PlayerComponent.class).shoot();
+                    FXGL.play("shoot_player.wav");
+                },Duration.seconds(0.3));
+            }
             return Unit.INSTANCE;
         });
         onKeyDown(KeyCode.F3, () -> {
@@ -259,7 +300,9 @@ public class InitSettings extends GameApplication {
         FXGL.getGameWorld().addEntityFactory(new InfernoBullet());
         FXGL.getGameWorld().addEntityFactory(new HealthBonus());
         FXGL.getGameWorld().addEntityFactory(new CoinBonus());
-        
+        FXGL.getGameWorld().addEntityFactory(new GunUpdateEntities());
+        FXGL.getGameWorld().addEntityFactory(new Powerup());
+
 
         backgroundMusic = FXGL.getAssetLoader().loadMusic("CosmicConquest.mp3");
         backgroundMusic.getAudio().setVolume(0.06);
@@ -286,7 +329,7 @@ public class InitSettings extends GameApplication {
                 }
             } else {
                 if ((FXGL.getGameWorld().getEntitiesByType(EntityType.COIN).isEmpty())&&FXGL.getGameWorld().getEntitiesByType(EntityType.HEALTH).isEmpty() &&
-                        FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY).isEmpty()) {
+                        FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY).isEmpty() && FXGL.getGameWorld().getEntitiesByType(EntityType.POWERUP).isEmpty()) {
                     FXGL.getGameTimer().runOnceAfter(() -> FXGL.getDialogService().showMessageBox("Wave " + (wave - 1) + " Completed!"), Duration.seconds(0));
                     try{
                         FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY, EntityType.ENEMY_BULLET).forEach(Entity::removeFromWorld);

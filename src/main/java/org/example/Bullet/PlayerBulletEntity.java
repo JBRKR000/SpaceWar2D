@@ -13,6 +13,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class PlayerBulletEntity implements EntityFactory {
 
+
     @Spawns("player_bullet")
     public Entity playerBullet(SpawnData data) {
         Point2D dir = data.get("dir");

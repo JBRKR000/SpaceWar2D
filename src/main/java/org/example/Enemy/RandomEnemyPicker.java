@@ -37,7 +37,12 @@ public class RandomEnemyPicker {
             enemyList4to6.add("striker");
             pick = enemyList4to6.get(random.nextInt(enemyList4to6.size()));
         }
-
+        if(wave == 10){
+            enemiesToDestroy = 1;
+            List<String> enemyList = new ArrayList<>();
+            enemyList.add("boss_1");
+            pick = enemyList.get(random.nextInt(enemyList.size()));
+        }
         return pick;
 
 

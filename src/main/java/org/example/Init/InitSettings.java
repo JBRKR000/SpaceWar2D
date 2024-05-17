@@ -19,9 +19,7 @@ import org.example.Bonus.HealthBonus;
 import org.example.Bonus.Powerup;
 import org.example.Bullet.*;
 import org.example.Debug.DebugWindow;
-import org.example.Enemy.Eclipse;
-import org.example.Enemy.Inferno;
-import org.example.Enemy.Striker;
+import org.example.Enemy.*;
 import org.example.Enemy.Void;
 import org.example.GunUpdates.GunUpdateEntities;
 import org.example.MainMenu.MainMenu;
@@ -302,11 +300,12 @@ public class InitSettings extends GameApplication {
         FXGL.getGameWorld().addEntityFactory(new CoinBonus());
         FXGL.getGameWorld().addEntityFactory(new GunUpdateEntities());
         FXGL.getGameWorld().addEntityFactory(new Powerup());
+        FXGL.getGameWorld().addEntityFactory(new Boss());
 
 
         backgroundMusic = FXGL.getAssetLoader().loadMusic("CosmicConquest.mp3");
         backgroundMusic.getAudio().setVolume(0.06);
-        backgroundMusic.getAudio().play();
+        //backgroundMusic.getAudio().play();
 
         FXGL.spawn("background");
         player = FXGL.spawn("player", (double) FXGL.getAppWidth() / 2 - 45, 500);
@@ -316,35 +315,68 @@ public class InitSettings extends GameApplication {
 
         run(() -> {
 
-            if (enemiesDefeated < enemiesToDestroy) {
-                if (enemyCount < maxPlayers && enemiesDefeated - enemyCount < maxPlayers) {
-                    String picker = picker();
-                    Entity enemy = FXGL.getGameWorld().create(picker, new SpawnData(200, 100).put("angle", 0));
-                    spawnWithScale(enemy, Duration.seconds(0)).angleProperty().set(0);
-                    enemyCount++;
-                    bulletSpawner.addEnemy(enemy, picker);
-                    isEnemySpawned = true;
-                    enemyType = picker();
-                    bonus = BonusSpawner.bonusSpawner(enemyType);
-                }
-            } else {
-                if ((FXGL.getGameWorld().getEntitiesByType(EntityType.COIN).isEmpty())&&FXGL.getGameWorld().getEntitiesByType(EntityType.HEALTH).isEmpty() &&
-                        FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY).isEmpty() && FXGL.getGameWorld().getEntitiesByType(EntityType.POWERUP).isEmpty()) {
-                    FXGL.getGameTimer().runOnceAfter(() -> FXGL.getDialogService().showMessageBox("Wave " + (wave - 1) + " Completed!"), Duration.seconds(0));
-                    try{
-                        FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY, EntityType.ENEMY_BULLET).forEach(Entity::removeFromWorld);
-                    }catch (Exception e){
-                        System.out.println("No enemies left");
+            if(wave != 10){
+                maxPlayers = FXGL.random(5,7);
+                if (enemiesDefeated < enemiesToDestroy) {
+                    if (enemyCount < maxPlayers && enemiesDefeated - enemyCount < maxPlayers) {
+                        String picker = picker();
+                        Entity enemy = FXGL.getGameWorld().create(picker, new SpawnData(200, 100).put("angle", 0));
+                        spawnWithScale(enemy, Duration.seconds(0)).angleProperty().set(0);
+                        enemyCount++;
+                        bulletSpawner.addEnemy(enemy, picker);
+                        isEnemySpawned = true;
+                        enemyType = picker();
+                        bonus = BonusSpawner.bonusSpawner(enemyType);
                     }
-                    enemiesDefeated = 0;
-                    enemyCount = 0;
-                    wave++;
+                } else {
+                    if ((FXGL.getGameWorld().getEntitiesByType(EntityType.COIN).isEmpty())&&FXGL.getGameWorld().getEntitiesByType(EntityType.HEALTH).isEmpty() &&
+                            FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY).isEmpty() && FXGL.getGameWorld().getEntitiesByType(EntityType.POWERUP).isEmpty()) {
+                        FXGL.getGameTimer().runOnceAfter(() -> FXGL.getDialogService().showMessageBox("Wave " + (wave - 1) + " Completed!"), Duration.seconds(0));
+                        try{
+                            FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY, EntityType.ENEMY_BULLET).forEach(Entity::removeFromWorld);
+                        }catch (Exception e){
+                            System.out.println("No enemies left");
+                        }
+                        enemiesDefeated = 0;
+                        enemyCount = 0;
+                        wave++;
+                    }
+                }
+            }else{
+                enemiesToDestroy = 1;
+                maxPlayers = 1;
+                if (enemiesDefeated < enemiesToDestroy) {
+                    if (enemyCount < maxPlayers && enemiesDefeated - enemyCount < maxPlayers) {
+                        String picker = picker();
+                        Entity enemy = FXGL.getGameWorld().create(picker, new SpawnData(200, 100).put("angle", 0));
+                        spawnWithScale(enemy, Duration.seconds(0)).angleProperty().set(0);
+                        enemyCount++;
+                        bulletSpawner.addEnemy(enemy, picker);
+                        isEnemySpawned = true;
+                        enemyType = picker();
+                        bonus = BonusSpawner.bonusSpawner(enemyType);
+                    }
+                } else {
+                    if ((FXGL.getGameWorld().getEntitiesByType(EntityType.COIN).isEmpty())&&FXGL.getGameWorld().getEntitiesByType(EntityType.HEALTH).isEmpty() &&
+                            FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY).isEmpty() && FXGL.getGameWorld().getEntitiesByType(EntityType.POWERUP).isEmpty()) {
+                        FXGL.getGameTimer().runOnceAfter(() -> FXGL.getDialogService().showMessageBox("Wave " + (wave - 1) + " Completed!"), Duration.seconds(0));
+                        try{
+                            FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY, EntityType.ENEMY_BULLET).forEach(Entity::removeFromWorld);
+                        }catch (Exception e){
+                            System.out.println("No enemies left");
+                        }
+                        enemiesDefeated = 0;
+                        enemyCount = 0;
+                        wave++;
+                    }
                 }
             }
 
 
+
         }, Duration.seconds(1));
         run(bulletSpawner::spawnBulletsFromEnemies, Duration.seconds(3));
+        run(bulletSpawner::spawnBulletForBoss, Duration.seconds(1));
 
     }
 

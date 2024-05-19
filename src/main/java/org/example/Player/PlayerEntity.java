@@ -7,13 +7,15 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.ui.ProgressBar;
+import javafx.util.Duration;
 import org.example.Other.EntityType;
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
 
 public class PlayerEntity implements EntityFactory {
     private static final int MAX_HP = 20;
     private int currentHP = MAX_HP;
-
+    public static double p_x;
+    public static double p_y;
 
 
     @Spawns("player")
@@ -34,6 +36,11 @@ public class PlayerEntity implements EntityFactory {
                 .with(new PlayerComponent())
                 .collidable()
                 .build();
+        FXGL.run(()->{
+            p_x = entity.getX();
+            p_y = entity.getY();
+        }, Duration.seconds(0.001));
+
 
         return entity;
     }

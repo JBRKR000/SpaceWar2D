@@ -8,6 +8,7 @@ import com.almasb.fxgl.time.LocalTimer;
 import com.sun.jdi.Method;
 import javafx.util.Duration;
 import org.example.Enemy.Inferno;
+import org.example.Other.EntityType;
 
 import java.util.*;
 
@@ -142,7 +143,10 @@ public class BulletSpawner {
                                 }
                                 break;
                             case 4:
-                                Entity bullet4 = FXGL.getGameWorld().create("inferno_bullet", new SpawnData(enemy.getX() + 75, enemy.getY() + 120).put("angle", 0));
+                                Entity player = FXGL.getGameWorld().getSingleton(EntityType.PLAYER);
+                                double targetX = player.getX();
+                                double targetY = player.getY();
+                                Entity bullet4 = FXGL.getGameWorld().create("inferno_bullet", new SpawnData(enemy.getX() + 75, enemy.getY() + 120).put("angle", 0).put("p_x", targetX).put("p_x", targetY));
                                 FXGL.play("INFERNO.wav");
                                 bullet4.setScaleX(1.1);
                                 bullet4.setScaleY(1.1);

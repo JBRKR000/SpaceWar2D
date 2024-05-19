@@ -47,7 +47,7 @@ public class InitSettings extends GameApplication {
     public static boolean isDebugEnabled = false;
     private Entity player;
     private int godmode = 0;
-    public static int wave = 1;  // Current wave
+    public static int wave = 10;  // Current wave
     public static int enemiesToDestroy = 10;  // Enemies to defeat per wave (adjustable)
     private int enemiesDefeated = 0;
     private int enemyCount = 0;

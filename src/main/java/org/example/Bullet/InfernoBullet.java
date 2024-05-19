@@ -10,11 +10,18 @@ import javafx.geometry.Point2D;
 import org.example.Other.EntityType;
 
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
+import static org.example.Player.PlayerEntity.p_x;
+import static org.example.Player.PlayerEntity.p_y;
 
 public class InfernoBullet implements EntityFactory {
     @Spawns("inferno_bullet")
     public Entity enemyBullet(SpawnData data) {
-        var velocity = new Point2D(0,1);
+        double destX = p_x;
+        double destY = p_y;
+
+        Point2D startPosition = new Point2D(data.getX(), data.getY()); // Pozycja początkowa pocisku
+        Point2D targetPosition = new Point2D(p_x, p_y); // Pozycja celu
+        Point2D velocity = targetPosition.subtract(startPosition).normalize().multiply(400); // Obliczenie wektora prędkości
         var entity = entityBuilder(data)
                 .type(EntityType.ENEMY_BULLET)
                 .viewWithBBox("bullet_3.png")

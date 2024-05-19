@@ -21,7 +21,7 @@ public class EclipseBullet implements EntityFactory {
                 .scale(0.45, 0.45)
                 .viewWithBBox("bullet_2.png")
                 .with(new OffscreenCleanComponent())
-                .with(new ProjectileComponent(velocity, 100))
+                .with(new ProjectileComponent(velocity, 250))
                 .collidable()
                 .build();
 
@@ -41,15 +41,15 @@ public class EclipseBullet implements EntityFactory {
     }
 
     private Entity createBullet(Entity sourceEntity, int index) {
-        double angle = 90 + index * 15;
-        Point2D velocityVector = new Point2D(Math.cos(Math.toRadians(angle)), Math.sin(Math.toRadians(angle))).multiply(1.5);
+        double angle = 45 + index * 45;
+        Point2D velocityVector = new Point2D(Math.cos(Math.toRadians(angle)), Math.sin(Math.toRadians(angle))).multiply(1.2);
 
         var bullet = entityBuilder()
                 .at(sourceEntity.getPosition())
                 .type(EntityType.ENEMY_BULLET)
                 .viewWithBBox("bullet_2.png")
                 .with(new OffscreenCleanComponent())
-                .with(new ProjectileComponent(velocityVector, 100))
+                .with(new ProjectileComponent(velocityVector, 200))
                 .collidable()
                 .build();
 

@@ -20,7 +20,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 public class Void implements EntityFactory {
     public boolean shoot = false;
     public static Point2D pos;
-    private static final int MAX_HP = 3;
+    private static final int MAX_HP = 20;
     @Spawns("void")
     public Entity newEnemy(SpawnData data) {
         var hp = new HealthIntComponent(MAX_HP);

@@ -19,6 +19,7 @@ import org.example.Bonus.HealthBonus;
 import org.example.Bonus.Powerup;
 import org.example.Bullet.*;
 import org.example.Debug.DebugWindow;
+import org.example.Effects.Explosion;
 import org.example.Enemy.*;
 import org.example.Enemy.Void;
 import org.example.GunUpdates.GunUpdateEntities;
@@ -140,6 +141,7 @@ public class InitSettings extends GameApplication {
                 bullet.removeFromWorld();
                 hp.damage(1);
                 FXGL.play("enemy_hit.wav");
+                FXGL.spawn("light_explosion", new SpawnData(enemy.getX()+30+FXGL.random(-10,20), enemy.getY()+20+FXGL.random(10,20)));
             } else {
                 FXGL.play("enemy_boom.wav");
                 enemy.removeFromWorld();
@@ -148,6 +150,7 @@ public class InitSettings extends GameApplication {
                 enemyCount--;
                 bulletSpawner.removeEnemy(enemy);
                 FXGL.spawn("scoreText", new SpawnData(enemy.getX(), enemy.getY()).put("text", "+100"));
+                FXGL.spawn("explosion", new SpawnData(enemy.getX(), enemy.getY()));
                 FXGL.inc("score", +100);
                 isEnemySpawned = false;
 
@@ -301,6 +304,8 @@ public class InitSettings extends GameApplication {
         FXGL.getGameWorld().addEntityFactory(new GunUpdateEntities());
         FXGL.getGameWorld().addEntityFactory(new Powerup());
         FXGL.getGameWorld().addEntityFactory(new Boss());
+        FXGL.getGameWorld().addEntityFactory(new Explosion());
+
 
 
         backgroundMusic = FXGL.getAssetLoader().loadMusic("CosmicConquest.mp3");

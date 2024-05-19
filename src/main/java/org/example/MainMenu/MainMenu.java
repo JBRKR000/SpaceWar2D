@@ -23,7 +23,7 @@ public class MainMenu extends FXGLMenu {
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
                 BackgroundPosition.DEFAULT, backgroundSize);
         getContentRoot().setBackground(new Background(background));
-        Media media = new Media(Objects.requireNonNull(getClass().getResource("/assets/music/MainMenu.wav")).toString());
+        Media media = new Media(Objects.requireNonNull(getClass().getResource("/assets/music/ChaseTheDestroyers.wav")).toString());
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         mediaPlayer.setVolume(0.05);

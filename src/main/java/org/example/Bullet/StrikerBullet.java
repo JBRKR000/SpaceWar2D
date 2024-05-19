@@ -1,5 +1,4 @@
 package org.example.Bullet;
-
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
@@ -9,8 +8,8 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import javafx.geometry.Point2D;
 import org.example.Other.EntityType;
-
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
+
 
 public class StrikerBullet implements EntityFactory {
     @Spawns("striker_bullet")
@@ -46,7 +45,7 @@ public class StrikerBullet implements EntityFactory {
                 .type(EntityType.ENEMY_BULLET)
                 .viewWithBBox("bullet_4.png")
                 .with(new OffscreenCleanComponent())
-                .with(new ProjectileComponent(velocity, 100))
+                .with(new ProjectileComponent(velocity, 150))
                 .collidable()
                 .build();
 

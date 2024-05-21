@@ -27,9 +27,10 @@ Screenshots 🖼️
 
 
 
-* Dev Updated Version (02.05.2024)
+* Dev Updated Version (22.05.2024)
   
-![image](https://github.com/JBRKR000/SpaceWar2D/assets/119077506/16fae9cb-02c0-4b6d-a2e1-99a8ab57fdb5)
+![image](https://github.com/JBRKR000/SpaceWar2D/assets/119077506/ede66c0b-8e38-4420-a07a-de45e0357a71)
+
 
 
 License 📜

@@ -6,11 +6,20 @@ import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.Effect;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.ui.ProgressBar;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.geometry.Point2D;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import kotlin.Unit;
 import org.example.Bonus.BonusSpawner;
@@ -30,8 +39,6 @@ import org.example.Player.PlayerComponent;
 import org.example.Player.PlayerEntity;
 import org.example.Score.ScoreEntity;
 import org.jetbrains.annotations.NotNull;
-
-import java.nio.channels.FileLock;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,6 +47,8 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 import static com.sun.javafx.animation.TickCalculation.TICKS_PER_SECOND;
 import static org.example.Enemy.RandomEnemyPicker.picker;
+import static org.example.Player.PlayerEntity.currentHP;
+import static org.example.Player.PlayerEntity.hp_;
 
 
 public class InitSettings extends GameApplication {
@@ -47,7 +56,7 @@ public class InitSettings extends GameApplication {
     public static boolean isDebugEnabled = false;
     private Entity player;
     private int godmode = 0;
-    public static int wave = 10;  // Current wave
+    public static int wave = 1;  // Current wave
     public static int enemiesToDestroy = 10;  // Enemies to defeat per wave (adjustable)
     private int enemiesDefeated = 0;
     private int enemyCount = 0;
@@ -61,7 +70,8 @@ public class InitSettings extends GameApplication {
     public static boolean isPowerupSpawned = false;
     public int bonus;
     private boolean spacebarPressed = false;
-    public static int powerup = 0;
+    public static Integer powerup = 0;
+    public static Integer powerupCounter = 1;
 
 
     public void initSettings(GameSettings settings) {
@@ -173,6 +183,7 @@ public class InitSettings extends GameApplication {
         onCollisionBegin(EntityType.ENEMY_BULLET, EntityType.PLAYER, (bullet, player) -> {
             if(godmode == 0) {
                 var hp = player.getComponent(HealthIntComponent.class);
+                hp_ = hp.getValue();
                 if (hp.getValue() > 1) {
                     bullet.removeFromWorld();
                     hp.damage(1);
@@ -193,6 +204,7 @@ public class InitSettings extends GameApplication {
         onCollisionBegin(EntityType.HEALTH, EntityType.PLAYER, (health, player) -> {
             if(godmode == 0) {
                 var hp = player.getComponent(HealthIntComponent.class);
+
                 if (hp.getValue() > 20) {
                     health.removeFromWorld();
                     isHealthSpawned = false;
@@ -203,6 +215,7 @@ public class InitSettings extends GameApplication {
                     FXGL.spawn("scoreText", new SpawnData(health.getX(), health.getY()).put("text", "+15"));
                     FXGL.inc("score", +15);
                     FXGL.play("health.wav");
+                    hp_ = hp.getValue();
                 }
             }
         });
@@ -220,6 +233,11 @@ public class InitSettings extends GameApplication {
         onCollisionBegin(EntityType.POWERUP, EntityType.PLAYER, (powerup, player) -> {
             if(godmode == 0) {
                 InitSettings.powerup++;
+                if(InitSettings.powerup%3 == 0 && InitSettings.powerup != 0) {
+                    powerupCounter++;
+                    InitSettings.powerup = 0;
+                    System.out.println(powerupCounter);
+                }
                 powerup.removeFromWorld();
                 isPowerupSpawned = false;
                 FXGL.play("powerup.wav");
@@ -278,7 +296,8 @@ public class InitSettings extends GameApplication {
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("score", 0);
-        vars.put("lives", 3);
+        vars.put("waveText", 1);
+        vars.put("enemyCount", 0);
     }
 
 
@@ -344,6 +363,7 @@ public class InitSettings extends GameApplication {
                         }
                         enemiesDefeated = 0;
                         enemyCount = 0;
+                        FXGL.inc("waveText", +1);
                         wave++;
                     }
                 }
@@ -387,21 +407,124 @@ public class InitSettings extends GameApplication {
 
     @Override
     protected void initUI() {
-        var text = FXGL.getUIFactoryService().newText("", 24);
-        text.textProperty().bind(FXGL.getip("score").asString("Score: [%d]"));
+        var text = FXGL.getUIFactoryService().newText("", 15);
+        text.textProperty().bind(FXGL.getip("score").asString("Score: %d"));
         FXGL.getWorldProperties().addListener("score", (prev, now) -> {
             FXGL.animationBuilder()
-                    .duration(Duration.seconds(0.5))
+                    .duration(Duration.seconds(0.2))
                     .interpolator(Interpolators.BOUNCE.EASE_OUT())
-                    .repeat(2)
+                    .repeat(1)
                     .autoReverse(true)
                     .scale(text)
                     .from(new Point2D(1, 1))
                     .to(new Point2D(1.2, 1.2))
                     .buildAndPlay();
         });
-        FXGL.addUINode(text, 20, 50);
+        FXGL.addUINode(text, 675, 50);
+
+
+
+
+        // PowerUp bar
+        ProgressBar powerUpLoad = new ProgressBar(false);
+        powerUpLoad.setWidth(200);
+        powerUpLoad.setHeight(10);
+        powerUpLoad.setRotate(-90);
+        powerUpLoad.setFill(Color.LIGHTBLUE);
+        powerUpLoad.setLabelVisible(false);
+        powerUpLoad.setLabelFill(Color.LIGHTBLUE);
+        powerUpLoad.setMaxValue(3);
+        FXGL.run(() -> {
+            powerUpLoad.setCurrentValue(powerup);
+
+        }, Duration.seconds(0.1));
+        FXGL.addUINode(powerUpLoad, -75, 175);
+
+        Image powerUpImage = new Image("/assets/textures/powerup.png");
+        ImageView powerUpView = new ImageView(powerUpImage);
+        powerUpView.setFitHeight(30);
+        powerUpView.setFitWidth(30);
+        powerUpView.setRotate(-90);
+        FXGL.addUINode(powerUpView, 9.5, 260);
+        FXGL.run(() -> {
+            if (powerup == 1) {
+                powerUpView.setY(-66);
+            } else if (powerup == 2) {
+                powerUpView.setY(-132);
+            } else if (powerup == 0) {
+                powerUpView.setY(0);
+            }
+
+        }, Duration.seconds(0.1));
+
+        // Health bar
+        ProgressBar healthBar = new ProgressBar(false);
+        healthBar.setWidth(200);
+        healthBar.setHeight(10);
+        healthBar.setRotate(-90);
+        healthBar.setFill(Color.GREEN);
+        healthBar.setLabelVisible(false);
+        healthBar.setLabelFill(Color.LIGHTBLUE);
+        healthBar.setMaxValue(20);
+        hp_ = 20;
+        FXGL.run(() -> {
+            healthBar.setCurrentValue(hp_);
+
+        }, Duration.seconds(0.1));
+        FXGL.addUINode(healthBar, -75, 400);
+
+
+
+
+        Image healthImage = new Image("/assets/textures/health.png");
+        ImageView healthView = new ImageView(healthImage);
+        healthView.setFitHeight(30);
+        healthView.setFitWidth(30);
+        healthView.setRotate(90);
+        FXGL.addUINode(healthView, 10, 390);
+        Timeline pulsateTimeline = new Timeline(
+                new KeyFrame(Duration.ZERO,
+                        new KeyValue(healthView.scaleXProperty(), 1),
+                        new KeyValue(healthView.scaleYProperty(), 1)
+                ),
+                new KeyFrame(Duration.seconds(0.5),
+                        new KeyValue(healthView.scaleXProperty(), 1.2),
+                        new KeyValue(healthView.scaleYProperty(), 1.2)
+                ),
+                new KeyFrame(Duration.seconds(1),
+                        new KeyValue(healthView.scaleXProperty(), 1),
+                        new KeyValue(healthView.scaleYProperty(), 1)
+                )
+        );
+        pulsateTimeline.setCycleCount(Animation.INDEFINITE);
+        pulsateTimeline.setAutoReverse(true);
+
+        FXGL.run(() -> {
+            if(healthBar.getCurrentValue() < (20 * 0.30)) {
+                healthBar.setFill(Color.RED);
+                if (pulsateTimeline.getStatus() != Animation.Status.RUNNING) {
+                    pulsateTimeline.play();
+                    FXGL.play("HeartBeat.wav");
+                }
+            } else {
+                healthBar.setFill(Color.GREEN);
+                pulsateTimeline.stop();
+                healthView.setScaleX(1);
+                healthView.setScaleY(1);
+            }
+        }, Duration.seconds(0.1));
+
+
+        Image additional = new Image("/assets/textures/Addition.png");
+        ImageView additionalview = new ImageView(additional);
+        additionalview.setFitHeight(45);
+        additionalview.setFitWidth(45);
+        additionalview.setRotate(0);
+        FXGL.addUINode(additionalview, 10, 535);
+
     }
+
+
 
     public void toggleEveryEnemyHas1HP() {
     }

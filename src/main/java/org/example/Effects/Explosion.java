@@ -1,21 +1,13 @@
 package org.example.Effects;
-
-import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
-import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
-import com.almasb.fxgl.texture.ImagesKt;
-import com.almasb.fxgl.texture.Texture;
-import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
-import org.example.Other.EntityType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +56,7 @@ public class Explosion implements EntityFactory {
     @Spawns("light_explosion")
     public Entity enemyBullet2(SpawnData data) {
         Entity entity =  entityBuilder(data)
-                .scale(0.1,0.1)
+                .scale(0.3,0.3)
                 .view(createAnimation2())
                 .collidable()
                 .buildAndAttach();

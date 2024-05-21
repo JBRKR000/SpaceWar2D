@@ -8,6 +8,7 @@ import org.example.GunUpdates.GunUpdateEntities;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.spawn;
 import static org.example.Init.InitSettings.powerup;
+import static org.example.Init.InitSettings.powerupCounter;
 
 public class PlayerComponent extends Component {
     public void moveLeft(){
@@ -33,15 +34,15 @@ public class PlayerComponent extends Component {
         }
     }
     public void shoot(){
-        if(powerup < 3){
+        if(powerupCounter == 1){
             Vec2 dir = Vec2.fromAngle(entity.getRotation()-90);
             spawn("player_bullet",new SpawnData(entity.getX()-20,entity.getY()-30).put("dir",dir.toPoint2D()));
         }
-        if(powerup >= 3 && powerup < 6){
+        if(powerupCounter == 2){
             Vec2 dir = Vec2.fromAngle(entity.getRotation()-90);
             spawn("lvl2",new SpawnData(entity.getX()-20,entity.getY()-30).put("dir",dir.toPoint2D()));
         }
-        if(powerup >= 6 && powerup < 9){
+        if(powerupCounter == 3){
             Vec2 dir = Vec2.fromAngle(entity.getRotation()-90);
             spawn("lvl3",new SpawnData(entity.getX()-20,entity.getY()-30).put("dir",dir.toPoint2D()));
         }

@@ -13,7 +13,8 @@ import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
 
 public class PlayerEntity implements EntityFactory {
     private static final int MAX_HP = 20;
-    private int currentHP = MAX_HP;
+    public static int currentHP = MAX_HP;
+    public static int hp_;
     public static double p_x;
     public static double p_y;
 
@@ -32,7 +33,6 @@ public class PlayerEntity implements EntityFactory {
                 .type(EntityType.PLAYER)
                 .viewWithBBox("player.png")
                 .with(hp)
-                .view(hpView)
                 .with(new PlayerComponent())
                 .collidable()
                 .build();

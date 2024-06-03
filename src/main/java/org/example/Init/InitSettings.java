@@ -81,7 +81,7 @@ public class InitSettings extends GameApplication {
         settings.setTitle("Game App");
         settings.setVersion("0.2b");
         settings.setTicksPerSecond(TICKS_PER_SECOND / 100);
-        settings.setMainMenuEnabled(true);
+        settings.setMainMenuEnabled(false);
         settings.setSceneFactory(new SceneFactory() {
             @NotNull
             @Override
@@ -344,7 +344,7 @@ public class InitSettings extends GameApplication {
                 if (enemiesDefeated < enemiesToDestroy) {
                     if (enemyCount < maxPlayers && enemiesDefeated - enemyCount < maxPlayers) {
                         String picker = picker();
-                        Entity enemy = FXGL.getGameWorld().create(picker, new SpawnData(200, 100).put("angle", 0));
+                        Entity enemy = FXGL.getGameWorld().create(picker, new SpawnData(FXGL.random(0, FXGL.getAppWidth()-20), 100).put("angle", 0));
                         spawnWithScale(enemy, Duration.seconds(0)).angleProperty().set(0);
                         enemyCount++;
                         bulletSpawner.addEnemy(enemy, picker);

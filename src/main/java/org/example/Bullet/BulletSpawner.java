@@ -127,19 +127,21 @@ public class BulletSpawner {
                                 bullet2.setVisible(false);
                                 break;
                             case 3:
-                                Entity bullet3 = FXGL.getGameWorld().create("void_laser", new SpawnData(enemy.getX() + 75, enemy.getY() + 120).put("angle", 0));
-                                FXGL.play("void_laser.wav");
-                                bullet3.setScaleX(1.1);
-                                bullet3.setScaleY(1.1);
-                                FXGL.getGameWorld().addEntity(bullet3);
-                                try {
-                                    FXGL.run(() -> {
-                                        if (FXGL.getGameWorld().getEntities().contains(bullet3)) {
-                                            FXGL.getGameWorld().removeEntity(bullet3);
-                                        }
-                                    }, Duration.seconds(0.3));
-                                } catch (Exception e) {
-                                    System.out.println("Failed to remove bullet");
+                                if(enemy.getComponent(RandomMoveComponent.class).getMoveSpeed() < 45){
+                                    Entity bullet3 = FXGL.getGameWorld().create("void_laser", new SpawnData(enemy.getX() + 80, enemy.getY() + 160).put("angle", 0));
+                                    FXGL.play("void_laser.wav");
+                                    bullet3.setScaleX(1.1);
+                                    bullet3.setScaleY(1.1);
+                                    FXGL.getGameWorld().addEntity(bullet3);
+                                    try {
+                                        FXGL.run(() -> {
+                                            if (FXGL.getGameWorld().getEntities().contains(bullet3)) {
+                                                FXGL.getGameWorld().removeEntity(bullet3);
+                                            }
+                                        }, Duration.seconds(0.3));
+                                    } catch (Exception e) {
+                                        System.out.println("Failed to remove bullet");
+                                    }
                                 }
                                 break;
                             case 4:

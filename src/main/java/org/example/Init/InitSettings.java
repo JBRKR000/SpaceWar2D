@@ -71,7 +71,8 @@ public class InitSettings extends GameApplication {
     public int bonus;
     private boolean spacebarPressed = false;
     public static Integer powerup = 0;
-    public static Integer powerupCounter = 1;
+    public static Integer powerupCounter = 4;
+    private static boolean hitsoundEnabled = false;
 
 
     public void initSettings(GameSettings settings) {
@@ -149,8 +150,17 @@ public class InitSettings extends GameApplication {
 
             if (hp.getValue() > 1) {
                 bullet.removeFromWorld();
-                hp.damage(1);
-                FXGL.play("enemy_hit.wav");
+                if(powerupCounter < 4){
+                    hp.damage(1);
+                } else if (powerupCounter == 4) {
+                    hp.damage(2);
+                }
+                if(!hitsoundEnabled){
+                    FXGL.play("enemy_hit.wav");
+                    hitsoundEnabled = true;
+                    FXGL.runOnce(() -> hitsoundEnabled = false, Duration.seconds(0.05));
+                }
+
                 FXGL.spawn("light_explosion", new SpawnData(enemy.getX()+30+FXGL.random(-10,20), enemy.getY()+20+FXGL.random(10,20)));
             } else {
                 FXGL.play("enemy_boom.wav");
@@ -268,10 +278,18 @@ public class InitSettings extends GameApplication {
         onKeyDown(KeyCode.SPACE, () -> {
             if(!spacebarPressed){
                 spacebarPressed = true;
-                FXGL.run(()->{
-                    player.getComponent(PlayerComponent.class).shoot();
-                    FXGL.play("shoot_player.wav");
-                },Duration.seconds(0.3));
+                if(powerupCounter < 4){
+                    FXGL.run(()->{
+                        player.getComponent(PlayerComponent.class).shoot();
+                        FXGL.play("shoot_player.wav");
+                    },Duration.seconds(0.3));
+                } else if (powerupCounter == 4){
+                    FXGL.run(()->{
+                        player.getComponent(PlayerComponent.class).shoot();
+                        FXGL.play("player_bullet_lvl_4.wav");
+                    },Duration.seconds(0.43));
+                }
+
             }
             return Unit.INSTANCE;
         });

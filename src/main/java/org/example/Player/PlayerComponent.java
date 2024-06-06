@@ -33,18 +33,22 @@ public class PlayerComponent extends Component {
             entity.translate(0, -10);
         }
     }
+
     public void shoot(){
-        if(powerupCounter == 1){
-            Vec2 dir = Vec2.fromAngle(entity.getRotation()-90);
-            spawn("player_bullet",new SpawnData(entity.getX()-20,entity.getY()-30).put("dir",dir.toPoint2D()));
-        }
-        if(powerupCounter == 2){
-            Vec2 dir = Vec2.fromAngle(entity.getRotation()-90);
-            spawn("lvl2",new SpawnData(entity.getX()-20,entity.getY()-30).put("dir",dir.toPoint2D()));
-        }
-        if(powerupCounter == 3){
-            Vec2 dir = Vec2.fromAngle(entity.getRotation()-90);
-            spawn("lvl3",new SpawnData(entity.getX()-20,entity.getY()-30).put("dir",dir.toPoint2D()));
+        var dir = Vec2.fromAngle(entity.getRotation()-90);
+        switch (powerupCounter){
+            case 1:
+                spawn("player_bullet",new SpawnData(entity.getX()-20,entity.getY()-30).put("dir",dir.toPoint2D()));
+                break;
+            case 2:
+                spawn("lvl2",new SpawnData(entity.getX()-20,entity.getY()-30).put("dir",dir.toPoint2D()));
+                break;
+            case 3:
+                spawn("lvl3",new SpawnData(entity.getX()-20,entity.getY()-30).put("dir",dir.toPoint2D()));
+                break;
+            case 4:
+                spawn("lvl4",new SpawnData(entity.getX()+3,entity.getY()-30).put("dir",dir.toPoint2D()));
+                break;
         }
     }
 

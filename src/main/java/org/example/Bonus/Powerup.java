@@ -20,7 +20,7 @@ public class Powerup implements EntityFactory {
                 .scale(0.45, 0.45)
                 .viewWithBBox("powerup.png")
                 .with(new OffscreenCleanComponent())
-                .with(new ProjectileComponent(velocity, 100))
+                .with(new ProjectileComponent(velocity, 200))
                 .collidable()
                 .build();
         entity.setOnActive(() -> {

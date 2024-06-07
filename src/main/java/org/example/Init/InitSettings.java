@@ -47,6 +47,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 import static com.sun.javafx.animation.TickCalculation.TICKS_PER_SECOND;
 import static org.example.Enemy.RandomEnemyPicker.picker;
+
 import static org.example.Player.PlayerEntity.currentHP;
 import static org.example.Player.PlayerEntity.hp_;
 
@@ -71,7 +72,7 @@ public class InitSettings extends GameApplication {
     public int bonus;
     private boolean spacebarPressed = false;
     public static Integer powerup = 0;
-    public static Integer powerupCounter = 4;
+    public static Integer powerupCounter = 1;
     private static boolean hitsoundEnabled = false;
 
 
@@ -153,6 +154,8 @@ public class InitSettings extends GameApplication {
                 if(powerupCounter < 4){
                     hp.damage(1);
                 } else if (powerupCounter == 4) {
+                    hp.damage(2);
+                } else if (powerupCounter == 5) {
                     hp.damage(2);
                 }
                 if(!hitsoundEnabled){
@@ -278,18 +281,7 @@ public class InitSettings extends GameApplication {
         onKeyDown(KeyCode.SPACE, () -> {
             if(!spacebarPressed){
                 spacebarPressed = true;
-                if(powerupCounter < 4){
-                    FXGL.run(()->{
-                        player.getComponent(PlayerComponent.class).shoot();
-                        FXGL.play("shoot_player.wav");
-                    },Duration.seconds(0.3));
-                } else if (powerupCounter == 4){
-                    FXGL.run(()->{
-                        player.getComponent(PlayerComponent.class).shoot();
-                        FXGL.play("player_bullet_lvl_4.wav");
-                    },Duration.seconds(0.43));
-                }
-
+                player.getComponent(PlayerComponent.class).shoot();
             }
             return Unit.INSTANCE;
         });
@@ -308,6 +300,10 @@ public class InitSettings extends GameApplication {
             DebugWindow.show(this);
             return Unit.INSTANCE;
         });
+
+    }
+
+    private void checkPowerup(){
 
     }
 

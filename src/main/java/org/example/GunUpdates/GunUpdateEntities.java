@@ -1,5 +1,4 @@
 package org.example.GunUpdates;
-
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.EffectComponent;
 import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
@@ -10,7 +9,6 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.TimeComponent;
 import javafx.geometry.Point2D;
-import org.example.Bullet.EclipseBullet;
 import org.example.Other.EntityType;
 
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
@@ -120,7 +118,49 @@ public class GunUpdateEntities implements EntityFactory {
     }
 
     private Entity createBullet_lvl4(Entity sourceEntity, int index) {
-        double angle = -98 + index * 15;
+        double angle = -97 + index * 15;
+        Point2D velocityVector = new Point2D(Math.cos(Math.toRadians(angle)), Math.sin(Math.toRadians(angle))).multiply(1.2);
+
+        var bullet = entityBuilder()
+                .at(sourceEntity.getPosition())
+                .scale(0.8,0.8)
+                .type(EntityType.PLAYER_BULLET)
+                .viewWithBBox("bullet_lvl_4.png")
+                .with(new OffscreenCleanComponent())
+                .with(new ProjectileComponent(velocityVector, 300))
+                .collidable()
+                .build();
+        return bullet;
+    }
+
+    @Spawns("lvl5")
+    public Entity playerBulletentity(SpawnData data) {
+        Point2D dir = data.get("dir");
+        var effectComponent = new EffectComponent();
+        var entity = entityBuilder(data)
+                .type(EntityType.PLAYER_BULLET)
+                .scale(0.8,0.8)
+                .viewWithBBox("bullet_lvl_4.png")
+                .with(new ProjectileComponent(dir, 300))
+                .with(new OffscreenCleanComponent())
+                .with(new TimeComponent())
+                .with(effectComponent)
+                .collidable()
+                .build();
+        entity.setOnActive(() -> {
+            spawnTripleBurst_lvl5(entity);
+        });
+        return entity;
+    }
+    private void spawnTripleBurst_lvl5(Entity sourceEntity) {
+        for (int i = 0; i < 5; i++) {
+            Entity bullet = createBullet_lvl5(sourceEntity, i);
+            FXGL.getGameWorld().addEntity(bullet);
+        }
+    }
+
+    private Entity createBullet_lvl5(Entity sourceEntity, int index) {
+        double angle = -118 + index * 15;
         Point2D velocityVector = new Point2D(Math.cos(Math.toRadians(angle)), Math.sin(Math.toRadians(angle))).multiply(1.2);
 
         var bullet = entityBuilder()

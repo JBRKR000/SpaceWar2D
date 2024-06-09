@@ -12,7 +12,7 @@ import static com.almasb.fxgl.dsl.FXGLForKtKt.spawn;
 import static org.example.Init.InitSettings.powerupCounter;
 
 public class PlayerComponent extends Component {
-    private AtomicReference<Double> shootInterval = new AtomicReference<>(0.6);
+    private AtomicReference<Double> shootInterval = new AtomicReference<>(0.9);
 
     public PlayerComponent() {
         FXGL.run(this::updateShootInterval, Duration.seconds(0.1));
@@ -49,7 +49,7 @@ public class PlayerComponent extends Component {
 
     private void updateShootInterval() {
         if (powerupCounter < 4) {
-            shootInterval.set(0.3);
+            shootInterval.set(0.4);
         } else if (powerupCounter == 5) {
             shootInterval.set(0.3);
         } else if (powerupCounter >= 6) {

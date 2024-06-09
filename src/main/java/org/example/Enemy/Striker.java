@@ -17,7 +17,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class Striker implements EntityFactory {
     public static Point2D pos;
-    private static final int MAX_HP = 12;
+    private static final int MAX_HP = 1200;
     @Spawns("striker")
     public Entity newEnemy(SpawnData data) {
 

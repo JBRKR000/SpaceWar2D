@@ -22,7 +22,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 public class Eclipse implements EntityFactory {
 
     public static Point2D pos;
-    private static final int MAX_HP = 10;
+    private static final int MAX_HP = 1000;
     @Spawns("eclipse")
     public Entity newEnemy(SpawnData data) {
         var hp = new HealthIntComponent(MAX_HP);

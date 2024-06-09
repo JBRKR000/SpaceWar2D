@@ -10,6 +10,7 @@ import com.almasb.fxgl.dsl.components.Effect;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.profile.DataFile;
 import com.almasb.fxgl.ui.ProgressBar;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -83,7 +84,7 @@ public class InitSettings extends GameApplication {
         settings.setTitle("Game App");
         settings.setVersion("0.2b");
         settings.setTicksPerSecond(TICKS_PER_SECOND / 100);
-        settings.setMainMenuEnabled(false);
+        settings.setMainMenuEnabled(true);
         settings.setSceneFactory(new SceneFactory() {
             @NotNull
             @Override
@@ -151,13 +152,19 @@ public class InitSettings extends GameApplication {
 
             if (hp.getValue() > 1) {
                 bullet.removeFromWorld();
-                if(powerupCounter < 4){
-                    hp.damage(1);
+                if(powerupCounter == 1){
+                    hp.damage(125);
                 } else if (powerupCounter == 4) {
-                    hp.damage(2);
+                    hp.damage(50);
                 } else if (powerupCounter == 5) {
-                    hp.damage(2);
+                    hp.damage(25);
+                } else if (powerupCounter == 2) {
+                    hp.damage(100);
+                } else if (powerupCounter == 3) {
+                    hp.damage(75);
                 }
+
+
                 if(!hitsoundEnabled){
                     FXGL.play("enemy_hit.wav");
                     hitsoundEnabled = true;
@@ -195,21 +202,23 @@ public class InitSettings extends GameApplication {
 
         onCollisionBegin(EntityType.ENEMY_BULLET, EntityType.PLAYER, (bullet, player) -> {
             if(godmode == 0) {
-                var hp = player.getComponent(HealthIntComponent.class);
-                hp_ = hp.getValue();
-                if (hp.getValue() > 1) {
-                    bullet.removeFromWorld();
-                    hp.damage(1);
-                    FXGL.play("player_gets_hit.wav");
-                } else {
-                    FXGL.play("player_explodes.wav");
-                    player.removeFromWorld();
-                    bullet.removeFromWorld();
-
-                    FXGL.getGameController().gotoMainMenu();
-                    System.out.println();
-                    enemyCount = 0;
-                    wave = 1;
+                try{
+                    var hp = player.getComponent(HealthIntComponent.class);
+                    hp_ = hp.getValue();
+                    if (hp.getValue() > 1) {
+                        bullet.removeFromWorld();
+                        hp.damage(1);
+                        FXGL.play("player_gets_hit.wav");
+                    } else {
+                        FXGL.play("player_explodes.wav");
+                        player.removeFromWorld();
+                        bullet.removeFromWorld();
+                        FXGL.getGameController().gotoMainMenu();
+                        enemyCount = 0;
+                        wave = 1;
+                    }
+                }catch (Exception e){
+                    System.out.println(e.getMessage());
                 }
             }
         });

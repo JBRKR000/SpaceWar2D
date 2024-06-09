@@ -20,7 +20,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 public class Inferno implements EntityFactory {
     public boolean shoot = false;
     public static Point2D pos;
-    private static final int MAX_HP = 15;
+    private static final int MAX_HP = 1500;
     @Spawns("inferno")
     public Entity newEnemy(SpawnData data) {
         var hp = new HealthIntComponent(MAX_HP);

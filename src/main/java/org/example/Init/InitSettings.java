@@ -445,7 +445,20 @@ public class InitSettings extends GameApplication {
         });
         FXGL.addUINode(text, 675, 50);
 
-
+        var wavetext = FXGL.getUIFactoryService().newText("", 15);
+        wavetext.textProperty().bind(FXGL.getip("waveText").asString("Wave: %d"));
+        FXGL.getWorldProperties().addListener("waveText", (prev, now) -> {
+            FXGL.animationBuilder()
+                    .duration(Duration.seconds(0.2))
+                    .interpolator(Interpolators.BOUNCE.EASE_OUT())
+                    .repeat(1)
+                    .autoReverse(true)
+                    .scale(wavetext)
+                    .from(new Point2D(1, 1))
+                    .to(new Point2D(1.2, 1.2))
+                    .buildAndPlay();
+        });
+        FXGL.addUINode(wavetext, 676, 70);
 
 
         // PowerUp bar

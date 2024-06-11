@@ -5,6 +5,7 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.audio.*;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.Effect;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
@@ -21,6 +22,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import kotlin.Unit;
 import org.example.Bonus.BonusSpawner;
@@ -36,6 +38,7 @@ import org.example.GunUpdates.GunUpdateEntities;
 import org.example.MainMenu.MainMenu;
 import org.example.Other.Entities;
 import org.example.Other.EntityType;
+import org.example.Other.StarComponent;
 import org.example.Player.PlayerComponent;
 import org.example.Player.PlayerEntity;
 import org.example.Score.ScoreEntity;
@@ -329,8 +332,10 @@ public class InitSettings extends GameApplication {
     }
 
 
+
     @Override
     protected void initGame() {
+
         Random random = new Random();
         FXGL.getSettings().setGlobalSoundVolume(0.1);
         FXGL.getGameWorld().addEntityFactory(new Entities());

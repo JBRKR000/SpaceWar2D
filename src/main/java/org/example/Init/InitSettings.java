@@ -4,7 +4,7 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
-import com.almasb.fxgl.audio.Music;
+import com.almasb.fxgl.audio.*;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.Effect;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
@@ -40,6 +40,11 @@ import org.example.Player.PlayerComponent;
 import org.example.Player.PlayerEntity;
 import org.example.Score.ScoreEntity;
 import org.jetbrains.annotations.NotNull;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -535,12 +540,25 @@ public class InitSettings extends GameApplication {
         pulsateTimeline.setCycleCount(Animation.INDEFINITE);
         pulsateTimeline.setAutoReverse(true);
 
+
+
+
         FXGL.run(() -> {
             if(healthBar.getCurrentValue() < (20 * 0.30)) {
                 healthBar.setFill(Color.RED);
                 if (pulsateTimeline.getStatus() != Animation.Status.RUNNING) {
                     pulsateTimeline.play();
-                    FXGL.play("HeartBeat.wav");
+                    AudioPlayer audioPlayer = new AudioPlayer();
+                    Path heartbeat = Paths.get("src/main/resources/assets/sounds/HeartBeat.wav");
+                    try {
+                        URL url = heartbeat.toUri().toURL();
+                        Audio audio =audioPlayer.loadAudio(AudioType.SOUND, url, false);
+                        audio.setVolume(0.1);
+                        audio.play();
+                        FXGL.runOnce(audio::stop,Duration.seconds(3));
+                    } catch (MalformedURLException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             } else {
                 healthBar.setFill(Color.GREEN);

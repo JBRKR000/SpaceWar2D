@@ -5,13 +5,10 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.audio.*;
-import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.dsl.components.Effect;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.profile.DataFile;
 import com.almasb.fxgl.ui.ProgressBar;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -22,13 +19,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import kotlin.Unit;
-import org.example.Bonus.BonusSpawner;
-import org.example.Bonus.CoinBonus;
-import org.example.Bonus.HealthBonus;
-import org.example.Bonus.Powerup;
+import org.example.Bonus.*;
 import org.example.Bullet.*;
 import org.example.Debug.DebugWindow;
 import org.example.Effects.Explosion;
@@ -38,7 +31,6 @@ import org.example.GunUpdates.GunUpdateEntities;
 import org.example.MainMenu.MainMenu;
 import org.example.Other.Entities;
 import org.example.Other.EntityType;
-import org.example.Other.StarComponent;
 import org.example.Player.PlayerComponent;
 import org.example.Player.PlayerEntity;
 import org.example.Score.ScoreEntity;
@@ -57,7 +49,6 @@ import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 import static com.sun.javafx.animation.TickCalculation.TICKS_PER_SECOND;
 import static org.example.Enemy.RandomEnemyPicker.picker;
 
-import static org.example.Player.PlayerEntity.currentHP;
 import static org.example.Player.PlayerEntity.hp_;
 
 
@@ -317,6 +308,9 @@ public class InitSettings extends GameApplication {
             DebugWindow.show(this);
             return Unit.INSTANCE;
         });
+        onKeyDown(KeyCode.X, () -> {
+            player.getComponent(PlayerComponent.class).usePowerRocket();
+        });
 
     }
 
@@ -357,6 +351,9 @@ public class InitSettings extends GameApplication {
         FXGL.getGameWorld().addEntityFactory(new Powerup());
         FXGL.getGameWorld().addEntityFactory(new Boss());
         FXGL.getGameWorld().addEntityFactory(new Explosion());
+        FXGL.getGameWorld().addEntityFactory(new rocketPower());
+        FXGL.getGameWorld().addEntityFactory(new Lightning());
+
 
 
 

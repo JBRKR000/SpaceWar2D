@@ -8,6 +8,7 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import javafx.geometry.Point2D;
+import javafx.util.Duration;
 import org.example.Other.EntityType;
 
 public class Lightning implements EntityFactory {
@@ -16,13 +17,17 @@ public class Lightning implements EntityFactory {
         var velocity = new Point2D(0, 1);
         var entity = FXGL.entityBuilder(data)
                 .type(EntityType.LIGHTNING)
-                .scale(1, 0.5)
+                .scale(1, 1)
+                .rotate(180)
                 .viewWithBBox("lightning.png")
                 .with(new OffscreenCleanComponent())
                 .with(new ProjectileComponent(velocity, 0))
                 .collidable()
                 .build();
         entity.setOnActive(() -> {
+            FXGL.runOnce(()->{
+                FXGL.getGameWorld().removeEntity(entity);
+            }, Duration.seconds(0.5));
         });
         return entity;
     }

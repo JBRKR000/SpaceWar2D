@@ -183,19 +183,19 @@ public class InitSettings extends GameApplication {
                 FXGL.inc("score", +100);
                 isEnemySpawned = false;
 
-                    if(randomHealth.get() == 2 && randomCoin.get() != 1) {
-                        FXGL.spawn("health_bonus", new SpawnData(enemy.getX(), enemy.getY()));
-                        isHealthSpawned = true;
-                    }
-                    if(randomCoin.get() == 1 && randomHealth.get() != 2) {
-                        FXGL.spawn("coin_bonus", new SpawnData(enemy.getX(), enemy.getY()));
-                        isCoinSpawned = true;
-                    }
-                    if(randomPowerUp.get() == 3) {
+                if(randomHealth.get() == 2 && randomCoin.get() != 1) {
+                    FXGL.spawn("health_bonus", new SpawnData(enemy.getX(), enemy.getY()));
+                    isHealthSpawned = true;
+                }
+                if(randomCoin.get() == 1 && randomHealth.get() != 2) {
+                    FXGL.spawn("coin_bonus", new SpawnData(enemy.getX(), enemy.getY()));
+                    isCoinSpawned = true;
+                }
+                if(randomPowerUp.get() == 3) {
 
-                        FXGL.spawn("powerup", new SpawnData(enemy.getX(), enemy.getY()));
-                        isPowerupSpawned = true;
-                    }
+                    FXGL.spawn("powerup", new SpawnData(enemy.getX(), enemy.getY()));
+                    isPowerupSpawned = true;
+                }
             }
         });
 
@@ -242,11 +242,11 @@ public class InitSettings extends GameApplication {
         });
         onCollisionBegin(EntityType.COIN, EntityType.PLAYER, (coin, player) -> {
             if(godmode == 0) {
-                    coin.removeFromWorld();
-                    isCoinSpawned = false;
-                    FXGL.spawn("scoreText", new SpawnData(coin.getX(), coin.getY()).put("text", "+" + bonus));
-                    FXGL.inc("score", +bonus);
-                    FXGL.play("coin.wav");
+                coin.removeFromWorld();
+                isCoinSpawned = false;
+                FXGL.spawn("scoreText", new SpawnData(coin.getX(), coin.getY()).put("text", "+" + bonus));
+                FXGL.inc("score", +bonus);
+                FXGL.play("coin.wav");
 
             }
         });
@@ -587,5 +587,4 @@ public class InitSettings extends GameApplication {
 
 
 }
-
 

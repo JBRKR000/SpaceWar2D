@@ -84,7 +84,7 @@ public class PlayerComponent extends Component {
     }
     public void usePowerRocket(){
         var dir = Vec2.fromAngle(entity.getRotation()+90);
-        spawn("lightning", new SpawnData(entity.getX(), entity.getY() - 28).put("dir", dir.toPoint2D()));
+        spawn("lightning", new SpawnData(entity.getX(), entity.getY()-470).put("dir", dir.toPoint2D()));
         spawn("rocket", new SpawnData(entity.getX() + 20, entity.getY() - 28).put("dir", dir.toPoint2D()));
         spawn("rocket", new SpawnData(entity.getX() - 18, entity.getY() - 28).put("dir", dir.toPoint2D()));
 

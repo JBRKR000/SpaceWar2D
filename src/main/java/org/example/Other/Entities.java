@@ -6,6 +6,8 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 
+import static org.example.Init.InitSettings.wave;
+
 public class Entities implements EntityFactory {
 
     @Spawns("background")
@@ -44,4 +46,22 @@ public class Entities implements EntityFactory {
                 .build();
     }
 
+
+    public static void pickBackground(){
+        if(wave == 1 || wave == 2){
+            FXGL.getGameWorld().spawn("background");
+        }
+        if(wave == 3 || wave == 4){
+            FXGL.getGameWorld().spawn("background2");
+        }
+        if(wave == 5 || wave == 6){
+            FXGL.getGameWorld().spawn("background3");
+        }
+        if(wave == 7 || wave == 8){
+            FXGL.getGameWorld().spawn("background4");
+        }
+        if(wave == 9 || wave == 10){
+            FXGL.getGameWorld().spawn("background5");
+        }
+    }
 }

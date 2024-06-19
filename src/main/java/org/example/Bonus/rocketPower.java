@@ -16,7 +16,7 @@ public class rocketPower implements EntityFactory {
         var velocity = new Point2D(0, -1);
         var entity = FXGL.entityBuilder(data)
                 .type(EntityType.ROCKET)
-                .scale(0.7, 0.7)
+                .scale(1, 1)
                 .rotate(90)
                 .viewWithBBox("rocket.png")
                 .with(new OffscreenCleanComponent())

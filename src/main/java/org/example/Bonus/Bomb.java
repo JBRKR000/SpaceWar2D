@@ -1,5 +1,4 @@
 package org.example.Bonus;
-
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.OffscreenCleanComponent;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
@@ -9,7 +8,6 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
-import org.example.Bullet.EclipseBullet;
 import org.example.Other.EntityType;
 
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
@@ -54,7 +52,7 @@ public class Bomb implements EntityFactory {
         double angle = 45 + index * 45;
         Point2D velocityVector = new Point2D(Math.cos(Math.toRadians(angle)), Math.sin(Math.toRadians(angle))).multiply(1.2);
 
-        var bullet = entityBuilder()
+        return entityBuilder()
                 .at(sourceEntity.getPosition())
                 .scale(0.02, 0.02)
                 .type(EntityType.BOMB)
@@ -63,7 +61,5 @@ public class Bomb implements EntityFactory {
                 .with(new ProjectileComponent(velocityVector, 400))
                 .collidable()
                 .build();
-
-        return bullet;
     }
 }

@@ -11,6 +11,9 @@ import javafx.geometry.Point2D;
 import javafx.util.Duration;
 import org.example.Other.EntityType;
 
+import static org.example.Player.PlayerEntity.p_x;
+import static org.example.Player.PlayerEntity.p_y;
+
 public class Lightning implements EntityFactory {
     @Spawns("lightning")
     public Entity lightning(SpawnData data) {
@@ -28,6 +31,9 @@ public class Lightning implements EntityFactory {
             FXGL.runOnce(()->{
                 FXGL.getGameWorld().removeEntity(entity);
             }, Duration.seconds(0.5));
+            FXGL.run(()->{
+                entity.setPosition(p_x, p_y-475);
+            },Duration.seconds(0.00001));
         });
         return entity;
     }

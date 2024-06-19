@@ -353,6 +353,7 @@ public class InitSettings extends GameApplication {
         FXGL.getGameWorld().addEntityFactory(new Explosion());
         FXGL.getGameWorld().addEntityFactory(new rocketPower());
         FXGL.getGameWorld().addEntityFactory(new Lightning());
+        FXGL.getGameWorld().addEntityFactory(new Bomb());
 
 
 

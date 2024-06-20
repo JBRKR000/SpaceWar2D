@@ -251,6 +251,46 @@ public class InitSettings extends GameApplication {
             }
         });
 
+        onCollisionBegin(EntityType.BOMB, EntityType.ENEMY, (bomb, enemy) -> {
+            var hp = enemy.getComponent(HealthIntComponent.class);
+
+            if (hp.getValue() > 1) {
+                bomb.removeFromWorld();
+                hp.damage(100);
+                if(!hitsoundEnabled){
+                    FXGL.play("enemy_hit.wav");
+                    hitsoundEnabled = true;
+                    FXGL.runOnce(() -> hitsoundEnabled = false, Duration.seconds(0.05));
+                }
+                FXGL.spawn("light_explosion", new SpawnData(enemy.getX()+30+FXGL.random(-10,20), enemy.getY()+20+FXGL.random(10,20)));
+            } else {
+                FXGL.play("enemy_boom.wav");
+                enemy.removeFromWorld();
+                bomb.removeFromWorld();
+                enemiesDefeated++;
+                enemyCount--;
+                bulletSpawner.removeEnemy(enemy);
+                FXGL.spawn("scoreText", new SpawnData(enemy.getX(), enemy.getY()).put("text", "+100"));
+                FXGL.spawn("explosion", new SpawnData(enemy.getX(), enemy.getY()));
+                FXGL.inc("score", +100);
+                isEnemySpawned = false;
+
+                if(randomHealth.get() == 2 && randomCoin.get() != 1) {
+                    FXGL.spawn("health_bonus", new SpawnData(enemy.getX(), enemy.getY()));
+                    isHealthSpawned = true;
+                }
+                if(randomCoin.get() == 1 && randomHealth.get() != 2) {
+                    FXGL.spawn("coin_bonus", new SpawnData(enemy.getX(), enemy.getY()));
+                    isCoinSpawned = true;
+                }
+                if(randomPowerUp.get() == 3) {
+
+                    FXGL.spawn("powerup", new SpawnData(enemy.getX(), enemy.getY()));
+                    isPowerupSpawned = true;
+                }
+            }
+        });
+
         onCollisionBegin(EntityType.POWERUP, EntityType.PLAYER, (powerup, player) -> {
             if(godmode == 0) {
                 InitSettings.powerup++;

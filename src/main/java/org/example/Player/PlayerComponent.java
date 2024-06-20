@@ -87,6 +87,6 @@ public class PlayerComponent extends Component {
         //spawn("lightning", new SpawnData(entity.getX(), entity.getY()-470).put("dir", dir.toPoint2D()));
         //spawn("rocket", new SpawnData(entity.getX() + 20, entity.getY() - 28).put("dir", dir.toPoint2D()));
         //spawn("rocket", new SpawnData(entity.getX() - 18, entity.getY() - 28).put("dir", dir.toPoint2D()));
-        //spawn("Bomb", new SpawnData(entity.getX()-350, entity.getY()-375).put("dir", dir.toPoint2D()));
+        spawn("Bomb", new SpawnData(entity.getX()-350, entity.getY()-375).put("dir", dir.toPoint2D()));
     }
 }

@@ -152,15 +152,15 @@ public class InitSettings extends GameApplication {
             if (hp.getValue() > 1) {
                 bullet.removeFromWorld();
                 if(powerupCounter == 1){
-                    hp.damage(125);
+                    hp.damage(20);
                 } else if (powerupCounter == 4) {
-                    hp.damage(50);
+                    hp.damage(18);
                 } else if (powerupCounter == 5) {
-                    hp.damage(25);
+                    hp.damage(16);
                 } else if (powerupCounter == 2) {
-                    hp.damage(100);
+                    hp.damage(17);
                 } else if (powerupCounter == 3) {
-                    hp.damage(75);
+                    hp.damage(15);
                 }
 
 

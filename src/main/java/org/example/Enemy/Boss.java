@@ -17,7 +17,7 @@ import org.example.Other.EntityType;
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class Boss implements EntityFactory {
-    int MAX_HP = 30000;
+    int MAX_HP = 5000;
     @Spawns("boss_1")
     public Entity boss_1(SpawnData data) {
         var hp = new HealthIntComponent(MAX_HP);

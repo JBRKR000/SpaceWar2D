@@ -21,6 +21,7 @@ public class Explosion implements EntityFactory {
         List<Image> frames = new ArrayList<>();
         for (int i = 0; i <= 11; i++) {
             String filename = String.format("assets/textures/frame_%02d_delay-0.1s.png", i);
+            System.out.println(filename);
             frames.add(new Image(filename));
         }
         AnimationChannel animationChannel = new AnimationChannel(frames, Duration.seconds(0.8));

@@ -1,8 +1,12 @@
-package org.example.Debug;
+
+        package org.example.Debug;
+
 import com.almasb.fxgl.dsl.FXGL;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import org.example.Init.InitSettings;
 
 import java.util.HashMap;
@@ -21,6 +25,9 @@ public class Console extends VBox {
                 String input = inputArea.getText().trim();
                 inputArea.clear();
                 processCommand(input);
+                event.consume();
+            } else if (event.getCode() == KeyCode.BACK_QUOTE) {
+                // Consume the tilde key event to prevent it from being added to the TextArea
                 event.consume();
             }
         });
@@ -96,7 +103,8 @@ public class Console extends VBox {
     }
 
     private void restartGame(String[] args) {
-        FXGL.getGameController().startNewGame();
+        FXGL.getGameController().gotoMainMenu();
+        FXGL.runOnce(() -> FXGL.getGameController().startNewGame(), Duration.seconds(0.5));
         FXGL.getNotificationService().pushNotification("Game restarted");
     }
 }

@@ -490,7 +490,7 @@ public class InitSettings extends GameApplication {
                 protected void onActionBegin() {
                     console.setVisible(!console.isVisible());
                 }
-            }, KeyCode.BACK_QUOTE);
+            }, KeyCode.F1);
         }
     }
     @Override

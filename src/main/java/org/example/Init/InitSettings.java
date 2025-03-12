@@ -77,8 +77,8 @@ public class InitSettings extends GameApplication {
 
 
     public void initSettings(GameSettings settings) {
-        settings.setWidth(800);
-        settings.setHeight(600);
+        settings.setWidth(1920);
+        settings.setHeight(1080);
         settings.setGameMenuEnabled(true);
         settings.setTitle("Game App");
         settings.setVersion("0.2b");

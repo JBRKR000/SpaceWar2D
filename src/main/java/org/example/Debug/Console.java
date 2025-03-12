@@ -104,6 +104,7 @@ public class Console extends VBox {
 
     private void restartGame(String[] args) {
         FXGL.getGameController().gotoMainMenu();
+        FXGL.getUIFactoryService().onGameReset();
         FXGL.runOnce(() -> FXGL.getGameController().startNewGame(), Duration.seconds(0.5));
         FXGL.getNotificationService().pushNotification("Game restarted");
     }

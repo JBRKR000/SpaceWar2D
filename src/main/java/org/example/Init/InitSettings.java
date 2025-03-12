@@ -54,7 +54,8 @@ import static org.example.Player.PlayerEntity.hp_;
 
 
 public class InitSettings extends GameApplication {
-
+    private UserAction toggleConsoleAction;
+    private Console console;
     public static boolean isDebugEnabled = false;
     private Entity player;
     private static boolean godmode = false;
@@ -79,11 +80,6 @@ public class InitSettings extends GameApplication {
     public static void setWave(int newWave) {
         wave = newWave;
         System.out.println("Wave set to " + wave);
-    }
-
-    private void restartGame() {
-        FXGL.getGameController().startNewGame();
-        FXGL.getNotificationService().pushNotification("Game restarted");
     }
 
     public void initSettings(GameSettings settings) {
@@ -479,20 +475,24 @@ public class InitSettings extends GameApplication {
         run(bulletSpawner::spawnBulletForBoss, Duration.seconds(1));
 
     }
+
     private void initializeConsole() {
-        Console console = new Console();
+        console = new Console();
         console.setVisible(false);
         FXGL.addUINode(console, 10, 10);
 
-        if (FXGL.getInput().getAllBindings().values().stream().noneMatch(binding -> "Toggle Console".equals(binding.getName()))) {
-            FXGL.getInput().addAction(new UserAction("Toggle Console") {
+        if (toggleConsoleAction == null) { // Dodajemy akcję tylko raz
+            toggleConsoleAction = new UserAction("Toggle Console") {
                 @Override
                 protected void onActionBegin() {
                     console.setVisible(!console.isVisible());
                 }
-            }, KeyCode.F1);
+            };
+
+            FXGL.getInput().addAction(toggleConsoleAction, KeyCode.F1);
         }
     }
+
     @Override
     protected void initUI() {
 

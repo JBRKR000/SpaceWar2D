@@ -9,6 +9,7 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.ui.ProgressBar;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -23,7 +24,7 @@ import javafx.util.Duration;
 import kotlin.Unit;
 import org.example.Bonus.*;
 import org.example.Bullet.*;
-import org.example.Debug.DebugWindow;
+import org.example.Debug.Console;
 import org.example.Effects.Explosion;
 import org.example.Enemy.*;
 import org.example.Enemy.Void;
@@ -56,7 +57,7 @@ public class InitSettings extends GameApplication {
 
     public static boolean isDebugEnabled = false;
     private Entity player;
-    private int godmode = 0;
+    private static boolean godmode = false;
     public static int wave = 1;  // Current wave
     public static int enemiesToDestroy = 10;  // Enemies to defeat per wave (adjustable)
     private int enemiesDefeated = 0;
@@ -75,14 +76,27 @@ public class InitSettings extends GameApplication {
     public static Integer powerupCounter = 1;
     private static boolean hitsoundEnabled = false;
 
+    public static void setWave(int newWave) {
+        wave = newWave;
+        System.out.println("Wave set to " + wave);
+    }
+
+    private void restartGame() {
+        FXGL.getGameController().startNewGame();
+        FXGL.getNotificationService().pushNotification("Game restarted");
+    }
 
     public void initSettings(GameSettings settings) {
-        settings.setWidth(800);
-        settings.setHeight(600);
+        settings.setWidth(1920);
+        settings.setHeight(1080);
         settings.setGameMenuEnabled(true);
-        settings.setTitle("Game App");
-        settings.setVersion("0.2b");
-        settings.setTicksPerSecond(TICKS_PER_SECOND / 100);
+        settings.setTitle("SpaceInvaders");
+        settings.setVersion("1.3.25.12.a");
+        settings.setFullScreenAllowed(true);
+        settings.setFullScreenFromStart(true);
+        settings.setCloseConfirmation(false); // TODO: Change to true
+        settings.setEntityPreloadEnabled(true);
+        settings.setTicksPerSecond(TICKS_PER_SECOND / 100); // 60FPS locked
         settings.setMainMenuEnabled(true);
         settings.setSceneFactory(new SceneFactory() {
             @NotNull
@@ -92,13 +106,10 @@ public class InitSettings extends GameApplication {
             }
         });
     }
-    public void toggleGodMode() {
-        godmode = 1;
-        System.out.println("GODMODE IS ENABLED");
-    }
-    public void toggleOffGodMode() {
-        System.out.println("GODMODE IS DISABLED");
-        godmode = 0;
+
+    public static void toggleGodMode() {
+        godmode = !godmode;
+        System.out.println("God mode: " + (godmode ? "enabled" : "disabled"));
     }
 
     @Override
@@ -200,7 +211,7 @@ public class InitSettings extends GameApplication {
         });
 
         onCollisionBegin(EntityType.ENEMY_BULLET, EntityType.PLAYER, (bullet, player) -> {
-            if(godmode == 0) {
+            if(!godmode) {
                 try{
                     var hp = player.getComponent(HealthIntComponent.class);
                     hp_ = hp.getValue();
@@ -223,7 +234,7 @@ public class InitSettings extends GameApplication {
         });
 
         onCollisionBegin(EntityType.HEALTH, EntityType.PLAYER, (health, player) -> {
-            if(godmode == 0) {
+            if(!godmode) {
                 var hp = player.getComponent(HealthIntComponent.class);
 
                 if (hp.getValue() > 20) {
@@ -241,7 +252,7 @@ public class InitSettings extends GameApplication {
             }
         });
         onCollisionBegin(EntityType.COIN, EntityType.PLAYER, (coin, player) -> {
-            if(godmode == 0) {
+            if(!godmode) {
                 coin.removeFromWorld();
                 isCoinSpawned = false;
                 FXGL.spawn("scoreText", new SpawnData(coin.getX(), coin.getY()).put("text", "+" + bonus));
@@ -292,7 +303,7 @@ public class InitSettings extends GameApplication {
         });
 
         onCollisionBegin(EntityType.POWERUP, EntityType.PLAYER, (powerup, player) -> {
-            if(godmode == 0) {
+            if(!godmode) {
                 InitSettings.powerup++;
                 if(InitSettings.powerup%3 == 0 && InitSettings.powerup != 0) {
                     powerupCounter++;
@@ -310,19 +321,19 @@ public class InitSettings extends GameApplication {
 
     @Override
     protected void initInput() {
-        onKey(KeyCode.RIGHT, () -> {
+        onKey(KeyCode.D, () -> {
             player.getComponent(PlayerComponent.class).moveRight();
             return Unit.INSTANCE;
         });
-        onKey(KeyCode.LEFT, () -> {
+        onKey(KeyCode.A, () -> {
             player.getComponent(PlayerComponent.class).moveLeft();
             return Unit.INSTANCE;
         });
-        onKey(KeyCode.UP, () -> {
+        onKey(KeyCode.W, () -> {
             player.getComponent(PlayerComponent.class).moveDown();
             return Unit.INSTANCE;
         });
-        onKey(KeyCode.DOWN, () -> {
+        onKey(KeyCode.S, () -> {
             player.getComponent(PlayerComponent.class).moveUp();
             return Unit.INSTANCE;
         });
@@ -343,15 +354,9 @@ public class InitSettings extends GameApplication {
             FXGL.getGameController().resumeEngine();
             return Unit.INSTANCE;
         });
-        onKeyDown(KeyCode.F5, () -> {
-            System.out.println("DEBUG WINDOW IS OPEN");
-            DebugWindow.show(this);
-            return Unit.INSTANCE;
-        });
         onKeyDown(KeyCode.X, () -> {
             player.getComponent(PlayerComponent.class).usePowerRocket();
         });
-
     }
 
     private void checkPowerup(){
@@ -369,7 +374,6 @@ public class InitSettings extends GameApplication {
 
     @Override
     protected void initGame() {
-
         Random random = new Random();
         FXGL.getSettings().setGlobalSoundVolume(0.1);
         FXGL.getGameWorld().addEntityFactory(new Entities());
@@ -475,9 +479,24 @@ public class InitSettings extends GameApplication {
         run(bulletSpawner::spawnBulletForBoss, Duration.seconds(1));
 
     }
+    private void initializeConsole() {
+        Console console = new Console();
+        console.setVisible(false);
+        FXGL.addUINode(console, 10, 10);
 
+        if (FXGL.getInput().getAllBindings().values().stream().noneMatch(binding -> "Toggle Console".equals(binding.getName()))) {
+            FXGL.getInput().addAction(new UserAction("Toggle Console") {
+                @Override
+                protected void onActionBegin() {
+                    console.setVisible(!console.isVisible());
+                }
+            }, KeyCode.BACK_QUOTE);
+        }
+    }
     @Override
     protected void initUI() {
+
+        initializeConsole();
         var text = FXGL.getUIFactoryService().newText("", 15);
         text.textProperty().bind(FXGL.getip("score").asString("Score: %d"));
         FXGL.getWorldProperties().addListener("score", (prev, now) -> {
@@ -491,7 +510,7 @@ public class InitSettings extends GameApplication {
                     .to(new Point2D(1.2, 1.2))
                     .buildAndPlay();
         });
-        FXGL.addUINode(text, 675, 50);
+        FXGL.addUINode(text, 1800, 50);
 
         var wavetext = FXGL.getUIFactoryService().newText("", 15);
         wavetext.textProperty().bind(FXGL.getip("waveText").asString("Wave: %d"));
@@ -506,7 +525,7 @@ public class InitSettings extends GameApplication {
                     .to(new Point2D(1.2, 1.2))
                     .buildAndPlay();
         });
-        FXGL.addUINode(wavetext, 676, 70);
+        FXGL.addUINode(wavetext, 1801, 70);
 
 
         // PowerUp bar
@@ -522,19 +541,19 @@ public class InitSettings extends GameApplication {
             powerUpLoad.setCurrentValue(powerup);
 
         }, Duration.seconds(0.1));
-        FXGL.addUINode(powerUpLoad, -75, 175);
+        FXGL.addUINode(powerUpLoad, -75, 600);
 
         Image powerUpImage = new Image("/assets/textures/powerup.png");
         ImageView powerUpView = new ImageView(powerUpImage);
         powerUpView.setFitHeight(30);
         powerUpView.setFitWidth(30);
         powerUpView.setRotate(-90);
-        FXGL.addUINode(powerUpView, 9.5, 260);
+        FXGL.addUINode(powerUpView, 9.5, 675);
         FXGL.run(() -> {
             if (powerup == 1) {
-                powerUpView.setY(-66);
+                powerUpView.setY(powerUpView.getFitWidth() - 70);
             } else if (powerup == 2) {
-                powerUpView.setY(-132);
+                powerUpView.setY(powerUpView.getFitWidth() - 140);
             } else if (powerup == 0) {
                 powerUpView.setY(0);
             }
@@ -555,7 +574,7 @@ public class InitSettings extends GameApplication {
             healthBar.setCurrentValue(hp_);
 
         }, Duration.seconds(0.1));
-        FXGL.addUINode(healthBar, -75, 400);
+        FXGL.addUINode(healthBar, -75, 850);
 
 
 
@@ -565,7 +584,7 @@ public class InitSettings extends GameApplication {
         healthView.setFitHeight(30);
         healthView.setFitWidth(30);
         healthView.setRotate(90);
-        FXGL.addUINode(healthView, 10, 390);
+        FXGL.addUINode(healthView, 10, 840);
         Timeline pulsateTimeline = new Timeline(
                 new KeyFrame(Duration.ZERO,
                         new KeyValue(healthView.scaleXProperty(), 1),
@@ -617,7 +636,7 @@ public class InitSettings extends GameApplication {
         additionalview.setFitHeight(45);
         additionalview.setFitWidth(45);
         additionalview.setRotate(0);
-        FXGL.addUINode(additionalview, 10, 535);
+        FXGL.addUINode(additionalview, 15, 1000);
 
     }
 

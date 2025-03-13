@@ -33,6 +33,14 @@ Screenshots 🖼️
 
 
 
+
+* Dev Updated Version (13.03.2025)
+
+![{7E80C5FB-844B-469C-86F2-1F71E006B3B8}](https://github.com/user-attachments/assets/d2846b42-c2a7-48e0-8a80-f86acf264ca4)
+
+
+
+
 License 📜
 ----------
 MIT License

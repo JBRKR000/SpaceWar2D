@@ -107,9 +107,11 @@ public class Console extends VBox {
         FXGL.getGameWorld().getEntitiesCopy().forEach(Entity::removeFromWorld);
         FXGL.getGameController().gotoMainMenu();
         FXGL.getUIFactoryService().onGameReset();
-        FXGL.runOnce(() -> {
-            FXGL.getGameController().startNewGame();
-        }, Duration.seconds(0.5));
+        InitSettings.enemiesDefeated = 0;
+        InitSettings.enemyCount = 0;
+        InitSettings.enemiesToDestroy = 10;
+        InitSettings.wave = 1;
+        FXGL.getGameController().startNewGame();
         FXGL.getNotificationService().pushNotification("Game restarted");
     }
 }

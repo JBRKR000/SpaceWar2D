@@ -15,10 +15,12 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import kotlin.Unit;
@@ -61,8 +63,8 @@ public class InitSettings extends GameApplication {
     private static boolean godmode = false;
     public static int wave = 1;  // Current wave
     public static int enemiesToDestroy = 10;  // Enemies to defeat per wave (adjustable)
-    private int enemiesDefeated = 0;
-    private int enemyCount = 0;
+    public static int enemiesDefeated = 0;
+    public static int enemyCount = 0;
     private final BulletSpawner bulletSpawner = new BulletSpawner();
     private Music backgroundMusic;
     private int maxPlayers = 5;
@@ -497,6 +499,35 @@ public class InitSettings extends GameApplication {
     protected void initUI() {
 
         initializeConsole();
+        // ------------ DEBUG UI ------------
+        // TODO: remove this in production!
+        VBox overlay = new VBox(5);
+        overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5); -fx-padding: 10;");
+
+        var debugText = FXGL.getUIFactoryService().newText("DEBUG", 15);
+        var waveText = FXGL.getUIFactoryService().newText("", 15);
+        var enemiesToDestroyText = FXGL.getUIFactoryService().newText("", 15);
+        var enemiesDefeatedText = FXGL.getUIFactoryService().newText("", 15);
+        var enemyCountText = FXGL.getUIFactoryService().newText("", 15);
+
+        overlay.getChildren().addAll( debugText, waveText, enemiesToDestroyText, enemiesDefeatedText, enemyCountText);
+        FXGL.addUINode(overlay, 10, 100);
+
+        Timeline uiUpdater = new Timeline(
+                new KeyFrame(Duration.seconds(0.1), event -> {
+                    debugText.setText("--- DEBUG MODE ---");
+                    waveText.setText("Wave: " + InitSettings.wave);
+                    enemiesToDestroyText.setText("Enemies to Destroy: " + InitSettings.enemiesToDestroy);
+                    enemiesDefeatedText.setText("Enemies Defeated: " + InitSettings.enemiesDefeated);
+                    enemyCountText.setText("Enemy Count: " + InitSettings.enemyCount);
+                })
+        );
+        uiUpdater.setCycleCount(Animation.INDEFINITE);
+        uiUpdater.play();
+        // TODO: remove this in production!
+        // ------------ DEBUG UI ------------
+
+
         var text = FXGL.getUIFactoryService().newText("", 15);
         text.textProperty().bind(FXGL.getip("score").asString("Score: %d"));
         FXGL.getWorldProperties().addListener("score", (prev, now) -> {

@@ -38,6 +38,8 @@ public class Striker implements EntityFactory {
         entity.addComponent(new EnemySetAngle());
         pos = new Point2D(entity.getX(),entity.getY());
         return entity;
+
+
     }
     private static class EnemySetAngle extends com.almasb.fxgl.entity.component.Component {
         @Override

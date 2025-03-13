@@ -6,6 +6,7 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.time.LocalTimer;
 import com.sun.jdi.Method;
+import javafx.geometry.Rectangle2D;
 import javafx.util.Duration;
 import org.example.Enemy.Inferno;
 import org.example.Other.EntityType;
@@ -41,8 +42,11 @@ public class BulletSpawner {
             FXGL.getGameTimer().runOnceAfter(() -> {
                 String type = enemies.get(enemy);
                 if (type != null && type.equals("inferno")) {
+                    if (!enemy.hasComponent(RandomMoveComponent.class)) {
+                        enemy.addComponent(new RandomMoveComponent(new Rectangle2D(0, 0, FXGL.getAppWidth(), FXGL.getAppHeight() / 2), 100));
+                    }
                     RandomMoveComponent moveComponent = enemy.getComponent(RandomMoveComponent.class);
-                    if (moveComponent != null && moveComponent.getMoveSpeed() == 0) {
+                    if (moveComponent.getMoveSpeed() == 0) {
                         Entity bullet = FXGL.getGameWorld().create("inferno_bullet", new SpawnData(enemy.getX() + 25, enemy.getY() + 40).put("angle", 0));
                         FXGL.play("INFERNO.wav");
                         bullet.setScaleX(1.1);
@@ -52,9 +56,12 @@ public class BulletSpawner {
                 }
                 if (type != null && type.equals("void")) {
                     if (FXGL.getGameWorld().getEntities().contains(enemy)) {
+                        if (!enemy.hasComponent(RandomMoveComponent.class)) {
+                            enemy.addComponent(new RandomMoveComponent(new Rectangle2D(0, 0, FXGL.getAppWidth(), FXGL.getAppHeight() / 2), 100));
+                        }
                         RandomMoveComponent moveComponent = enemy.getComponent(RandomMoveComponent.class);
                         int random = FXGL.random(1, 2);
-                        if (random == 1 && (moveComponent != null && moveComponent.getMoveSpeed() == 0)) {
+                        if (random == 1 && moveComponent.getMoveSpeed() == 0) {
                             Entity bullet = FXGL.getGameWorld().create("void_laser", new SpawnData(enemy.getX() + 19, enemy.getY() + 40).put("angle", 0));
                             FXGL.play("void_laser.wav");
                             bullet.setScaleX(1.1);
@@ -80,6 +87,9 @@ public class BulletSpawner {
                 }
                 if (type != null && type.equals("striker")) {
                     if (FXGL.getGameWorld().getEntities().contains(enemy)) {
+                        if (!enemy.hasComponent(RandomMoveComponent.class)) {
+                            enemy.addComponent(new RandomMoveComponent(new Rectangle2D(0, 0, FXGL.getAppWidth(), FXGL.getAppHeight() / 2), 100));
+                        }
                         Entity bullet = FXGL.getGameWorld().create("striker_bullet", new SpawnData(enemy.getX() + 25, enemy.getY() + 40).put("angle", 0));
                         FXGL.play("STRIKER.wav");
                         bullet.setScaleX(1.1);
@@ -90,6 +100,9 @@ public class BulletSpawner {
                 }
                 if (type != null && type.equals("eclipse")) {
                     if (FXGL.getGameWorld().getEntities().contains(enemy)) {
+                        if (!enemy.hasComponent(RandomMoveComponent.class)) {
+                            enemy.addComponent(new RandomMoveComponent(new Rectangle2D(0, 0, FXGL.getAppWidth(), FXGL.getAppHeight() / 2), 100));
+                        }
                         Entity bullet = FXGL.getGameWorld().create("eclipse_bullet", new SpawnData(enemy.getX() + 25, enemy.getY() + 40).put("angle", 0));
                         FXGL.play("ECLIPSE.wav");
                         bullet.setScaleX(1.1);
@@ -98,8 +111,6 @@ public class BulletSpawner {
                     }
                 }
             }, Duration.seconds(delay));
-
-
         }
     }
 

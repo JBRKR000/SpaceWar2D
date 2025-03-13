@@ -45,7 +45,7 @@ public class Eclipse implements EntityFactory {
 
         FXGL.run(()->{
             try{
-                if(entity.getComponent(RandomMoveComponent.class) != null){
+                if(entity.hasComponent(RandomMoveComponent.class)){
                     int randomspeed = FXGL.random(0,100);
                     entity.getComponent(RandomMoveComponent.class).setMoveSpeed(randomspeed);
                 }

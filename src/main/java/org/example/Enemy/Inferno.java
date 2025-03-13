@@ -41,7 +41,7 @@ public class Inferno implements EntityFactory {
         pos = new Point2D(entity.getX(),entity.getY());
         FXGL.run(()->{
             try{
-                if(entity.getComponent(RandomMoveComponent.class) != null){
+                if(entity.hasComponent(RandomMoveComponent.class)){
                     Random random = new Random();
                     int randomspeed = random.nextInt(2) * 300;
                     shoot = randomspeed != 300;

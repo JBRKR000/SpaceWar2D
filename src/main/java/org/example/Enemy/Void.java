@@ -40,7 +40,7 @@ public class Void implements EntityFactory {
         entity.addComponent(new Void.EnemySetAngle());
         FXGL.run(()->{
             try{
-                if(entity.getComponent(RandomMoveComponent.class) != null){
+                if(entity.hasComponent(RandomMoveComponent.class)){
                     Random random = new Random();
                     int randomspeed = random.nextInt(2) * 100;
                     shoot = randomspeed != 300;

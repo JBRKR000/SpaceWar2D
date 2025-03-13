@@ -2,6 +2,7 @@
         package org.example.Debug;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -103,9 +104,12 @@ public class Console extends VBox {
     }
 
     private void restartGame(String[] args) {
+        FXGL.getGameWorld().getEntitiesCopy().forEach(Entity::removeFromWorld);
         FXGL.getGameController().gotoMainMenu();
         FXGL.getUIFactoryService().onGameReset();
-        FXGL.runOnce(() -> FXGL.getGameController().startNewGame(), Duration.seconds(0.5));
+        FXGL.runOnce(() -> {
+            FXGL.getGameController().startNewGame();
+        }, Duration.seconds(0.5));
         FXGL.getNotificationService().pushNotification("Game restarted");
     }
 }

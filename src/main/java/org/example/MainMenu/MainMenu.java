@@ -17,13 +17,14 @@ public class MainMenu extends FXGLMenu {
     private MediaPlayer mediaPlayer;
     public MainMenu() {
         super(MenuType.MAIN_MENU);
-        BackgroundSize backgroundSize = new BackgroundSize(1920, 1080, true, true, false, true);
-        Image backgroundImage = new Image("assets/textures/background.jpg");
+        double appWidth = FXGL.getAppWidth();
+        double appHeight = FXGL.getAppHeight();
+        BackgroundSize backgroundSize = new BackgroundSize(appWidth, appHeight, false, false, false, false);
+        Image backgroundImage = new Image("assets/textures/background3.jpg");
         BackgroundImage background = new BackgroundImage(backgroundImage,
-                BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.DEFAULT, backgroundSize);
-        getContentRoot().setBackground(new Background(background));
-        Media media = new Media(Objects.requireNonNull(getClass().getResource("/assets/music/ChaseTheDestroyers.wav")).toString());
+        Media media = new Media(Objects.requireNonNull(getClass().getResource("/assets/music/CosmicConquest.mp3")).toString());
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         mediaPlayer.setVolume(0.05);
@@ -34,6 +35,7 @@ public class MainMenu extends FXGLMenu {
         });
         button.setTranslateX(FXGL.getAppWidth() / 2 - 200 / 2);
         button.setTranslateY(FXGL.getAppHeight() / 2 - 40 / 2);
+        getContentRoot().setBackground(new Background(background));
         getContentRoot().getChildren().add(button);
     }
 

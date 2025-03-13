@@ -400,9 +400,9 @@ public class InitSettings extends GameApplication {
 
 
 
-        backgroundMusic = FXGL.getAssetLoader().loadMusic("CosmicConquest.mp3");
+        backgroundMusic = FXGL.getAssetLoader().loadMusic("TerminatorBattle.mp3");
         backgroundMusic.getAudio().setVolume(0.06);
-        //backgroundMusic.getAudio().play();
+        backgroundMusic.getAudio().play();
 
         FXGL.spawn("background");
         player = FXGL.spawn("player", (double) FXGL.getAppWidth() / 2 - 45, 500);

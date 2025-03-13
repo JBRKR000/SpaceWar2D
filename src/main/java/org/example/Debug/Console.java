@@ -111,6 +111,8 @@ public class Console extends VBox {
         InitSettings.enemyCount = 0;
         InitSettings.enemiesToDestroy = 10;
         InitSettings.wave = 1;
+        InitSettings.powerup = 0;
+        InitSettings.setWave(1);
         FXGL.getGameController().startNewGame();
         FXGL.getNotificationService().pushNotification("Game restarted");
     }

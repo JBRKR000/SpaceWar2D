@@ -505,12 +505,20 @@ public class InitSettings extends GameApplication {
         overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5); -fx-padding: 10;");
 
         var debugText = FXGL.getUIFactoryService().newText("DEBUG", 15);
+        var F1KEY = FXGL.getUIFactoryService().newText("Press F1 to toggle Console", 15);
         var waveText = FXGL.getUIFactoryService().newText("", 15);
         var enemiesToDestroyText = FXGL.getUIFactoryService().newText("", 15);
         var enemiesDefeatedText = FXGL.getUIFactoryService().newText("", 15);
         var enemyCountText = FXGL.getUIFactoryService().newText("", 15);
+        var godModeText = FXGL.getUIFactoryService().newText("", 15);
+        var isCoinSpawnedText = FXGL.getUIFactoryService().newText("", 15);
+        var isHealthSpawnedText = FXGL.getUIFactoryService().newText("", 15);
+        var isEnemySpawnedText = FXGL.getUIFactoryService().newText("", 15);
+        var isPowerupSpawnedText = FXGL.getUIFactoryService().newText("", 15);
+        var powerupText = FXGL.getUIFactoryService().newText("", 15);
 
-        overlay.getChildren().addAll( debugText, waveText, enemiesToDestroyText, enemiesDefeatedText, enemyCountText);
+        overlay.getChildren().addAll( debugText, F1KEY, waveText, enemiesToDestroyText, enemiesDefeatedText, enemyCountText, godModeText
+        , isCoinSpawnedText, isHealthSpawnedText, isEnemySpawnedText, isPowerupSpawnedText, powerupText);
         FXGL.addUINode(overlay, 10, 100);
 
         Timeline uiUpdater = new Timeline(
@@ -520,6 +528,12 @@ public class InitSettings extends GameApplication {
                     enemiesToDestroyText.setText("Enemies to Destroy: " + InitSettings.enemiesToDestroy);
                     enemiesDefeatedText.setText("Enemies Defeated: " + InitSettings.enemiesDefeated);
                     enemyCountText.setText("Enemy Count: " + InitSettings.enemyCount);
+                    godModeText.setText("God Mode: " + (godmode ? "enabled" : "disabled"));
+                    isCoinSpawnedText.setText("Coin Spawned: " + (isCoinSpawned ? "yes" : "no"));
+                    isHealthSpawnedText.setText("Health Spawned: " + (isHealthSpawned ? "yes" : "no"));
+                    isEnemySpawnedText.setText("Enemy Spawned: " + (isEnemySpawned ? "yes" : "no"));
+                    isPowerupSpawnedText.setText("Powerup Spawned: " + (isPowerupSpawned ? "yes" : "no"));
+                    powerupText.setText("Powerup: " + powerup);
                 })
         );
         uiUpdater.setCycleCount(Animation.INDEFINITE);

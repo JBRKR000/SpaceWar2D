@@ -6,6 +6,8 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
+import com.almasb.fxgl.physics.BoundingShape;
+import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.ui.ProgressBar;
 import javafx.util.Duration;
 import org.example.Other.EntityType;
@@ -31,7 +33,8 @@ public class PlayerEntity implements EntityFactory {
 
         Entity entity = entityBuilder(data)
                 .type(EntityType.PLAYER)
-                .viewWithBBox("player.png")
+                .bbox(new HitBox(BoundingShape.box(64,58)))
+//                .viewWithBBox("player.png")
                 .with(hp)
                 .with(new PlayerComponent())
                 .collidable()
@@ -40,8 +43,6 @@ public class PlayerEntity implements EntityFactory {
             p_x = entity.getX();
             p_y = entity.getY();
         }, Duration.seconds(0.001));
-
-
         return entity;
     }
 }

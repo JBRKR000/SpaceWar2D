@@ -33,7 +33,7 @@ public class Explosion implements EntityFactory {
 
     private AnimatedTexture createAnimation2() {
         List<Image> frames = new ArrayList<>();
-        for (int i = 0; i <= 7; i++) { // Pętla od 1 do 8
+        for (int i = 0; i <= 7; i++) {
             String filename = String.format("assets/textures/frame_%d_delay-0.1s.gif", i); // Formatowanie bez zera wiodącego
             frames.add(new Image(filename));
         }

@@ -61,7 +61,7 @@ public class InitSettings extends GameApplication {
     public static boolean isDebugEnabled = false;
     private Entity player;
     private static boolean godmode = false;
-    public static int wave = 1;  // Current wave
+    public static int wave = 5;  // Current wave
     public static int enemiesToDestroy = 10;  // Enemies to defeat per wave (adjustable)
     public static int enemiesDefeated = 0;
     public static int enemyCount = 0;
@@ -112,6 +112,7 @@ public class InitSettings extends GameApplication {
 
     @Override
     protected void initPhysics() {
+        // ------ SECTION ABOUT RANDOMNESS OF BONUSES ------
         AtomicInteger randomHealth = new AtomicInteger();
         run(()->{
             if(wave < 3){
@@ -154,6 +155,8 @@ public class InitSettings extends GameApplication {
             }
 
         },Duration.seconds(0.1));
+
+        // ------ SECTION ABOUT RANDOMNESS OF BONUSES ------
 
         onCollisionBegin(EntityType.PLAYER_BULLET, EntityType.ENEMY, (bullet, enemy) -> {
             var hp = enemy.getComponent(HealthIntComponent.class);
@@ -201,7 +204,6 @@ public class InitSettings extends GameApplication {
                     isCoinSpawned = true;
                 }
                 if(randomPowerUp.get() == 3) {
-
                     FXGL.spawn("powerup", new SpawnData(enemy.getX(), enemy.getY()));
                     isPowerupSpawned = true;
                 }
@@ -216,7 +218,7 @@ public class InitSettings extends GameApplication {
                     if (hp.getValue() > 1) {
                         bullet.removeFromWorld();
                         hp.damage(1);
-                        FXGL.play("player_gets_hit.wav");
+                        FXGL.play("userhit.wav");
                     } else {
                         FXGL.play("player_explodes.wav");
                         player.removeFromWorld();

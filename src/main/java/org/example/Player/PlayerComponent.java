@@ -4,6 +4,9 @@ import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.texture.AnimatedTexture;
+import com.almasb.fxgl.texture.AnimationChannel;
+import javafx.scene.image.Image;
 import javafx.util.Duration;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -13,20 +16,51 @@ import static org.example.Init.InitSettings.powerupCounter;
 
 public class PlayerComponent extends Component {
     private AtomicReference<Double> shootInterval = new AtomicReference<>(0.9);
+    private AnimatedTexture texture;
+    private AnimationChannel idle, moveLeft, moveRight;
+    private double prevX, prevY;
 
     public PlayerComponent() {
+        Image image = FXGL.image("player_ship.png");
+        idle = new AnimationChannel(image, 8, 512 / 8, 175 / 3, Duration.seconds(1), 0, 2);
+        moveLeft = new AnimationChannel(image, 8, 512 / 8, 175 / 3, Duration.seconds(1), 4, 8);
+        moveRight = new AnimationChannel(image, 8, 512 / 8, 175 / 3, Duration.seconds(1), 8, 11);
+        texture = new AnimatedTexture(idle);
         FXGL.run(this::updateShootInterval, Duration.seconds(0.1));
+    }
+
+    @Override
+    public void onAdded() {
+        entity.getViewComponent().addChild(texture);
+        prevX = entity.getX();
+        prevY = entity.getY();
+    }
+
+    @Override
+    public void onUpdate(double tpf) {
+        if (entity.getX() != prevX || entity.getY() != prevY) {
+        } else {
+            texture.loopAnimationChannel(idle);
+        }
+        prevX = entity.getX();
+        prevY = entity.getY();
     }
 
     public void moveLeft() {
         if (entity.getX() > 10) {
             entity.translate(-10, 0);
+            if (texture.getAnimationChannel() != moveLeft) {
+                texture.loopAnimationChannel(moveLeft);
+            }
         }
     }
 
     public void moveRight() {
         if (entity.getX() < FXGL.getAppWidth() - 45) {
             entity.translate(10, 0);
+            if (texture.getAnimationChannel() != moveRight) {
+                texture.loopAnimationChannel(moveRight);
+            }
         }
     }
 
@@ -43,8 +77,7 @@ public class PlayerComponent extends Component {
     }
 
     public void shoot() {
-        FXGL.run(this::spawnShoot
-        ,Duration.seconds(shootInterval.get()));
+        FXGL.run(this::spawnShoot, Duration.seconds(shootInterval.get()));
     }
 
     private void updateShootInterval() {
@@ -82,11 +115,9 @@ public class PlayerComponent extends Component {
                 break;
         }
     }
-    public void usePowerRocket(){
-        var dir = Vec2.fromAngle(entity.getRotation()+90);
-        //spawn("lightning", new SpawnData(entity.getX(), entity.getY()-470).put("dir", dir.toPoint2D()));
-        //spawn("rocket", new SpawnData(entity.getX() + 20, entity.getY() - 28).put("dir", dir.toPoint2D()));
-        //spawn("rocket", new SpawnData(entity.getX() - 18, entity.getY() - 28).put("dir", dir.toPoint2D()));
-        spawn("Bomb", new SpawnData(entity.getX()-350, entity.getY()-375).put("dir", dir.toPoint2D()));
+
+    public void usePowerRocket() {
+        var dir = Vec2.fromAngle(entity.getRotation() + 90);
+        spawn("Bomb", new SpawnData(entity.getX() - 350, entity.getY() - 375).put("dir", dir.toPoint2D()));
     }
 }

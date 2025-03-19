@@ -48,7 +48,7 @@ public class BulletSpawner {
                     RandomMoveComponent moveComponent = enemy.getComponent(RandomMoveComponent.class);
                     if (moveComponent.getMoveSpeed() == 0) {
                         Entity bullet = FXGL.getGameWorld().create("inferno_bullet", new SpawnData(enemy.getX() + 25, enemy.getY() + 40).put("angle", 0));
-                        FXGL.play("INFERNO.wav");
+                        FXGL.play("s19.wav");
                         bullet.setScaleX(1.1);
                         bullet.setScaleY(1.1);
                         FXGL.getGameWorld().addEntity(bullet);
@@ -63,14 +63,45 @@ public class BulletSpawner {
                         int random = FXGL.random(1, 2);
                         if (random == 1 && moveComponent.getMoveSpeed() == 0) {
                             Entity bullet = FXGL.getGameWorld().create("void_laser", new SpawnData(enemy.getX() + 19, enemy.getY() + 40).put("angle", 0));
+                            Entity bullet3 = FXGL.getGameWorld().create("void_laser", new SpawnData(enemy.getX() + 19, enemy.getY() + 40).put("angle", 0));
+                            Entity bullet2 = FXGL.getGameWorld().create("void_laser", new SpawnData(enemy.getX() + 230, enemy.getY() + 40).put("angle", 0));
+                            Entity bullet4 = FXGL.getGameWorld().create("void_laser", new SpawnData(enemy.getX() + 230, enemy.getY() + 40).put("angle", 0));
                             FXGL.play("void_laser.wav");
                             bullet.setScaleX(1.1);
                             bullet.setScaleY(1.1);
                             FXGL.getGameWorld().addEntity(bullet);
+                            FXGL.runOnce(()->{
+                                FXGL.play("void_laser.wav");
+                                FXGL.getGameWorld().addEntity(bullet2);
+                            }, Duration.seconds(0.25));
+                            FXGL.runOnce(()->{
+                                FXGL.play("void_laser.wav");
+                                FXGL.getGameWorld().addEntity(bullet3);
+                            }, Duration.seconds(0.5));
+                            FXGL.runOnce(()->{
+                                FXGL.play("void_laser.wav");
+                                FXGL.getGameWorld().addEntity(bullet4);
+                            }, Duration.seconds(0.75));
+
                             try {
                                 FXGL.run(() -> {
                                     if (FXGL.getGameWorld().getEntities().contains(bullet)) {
                                         FXGL.getGameWorld().removeEntity(bullet);
+                                    }
+                                }, Duration.seconds(0.25));
+                                FXGL.run(() -> {
+                                    if (FXGL.getGameWorld().getEntities().contains(bullet2)) {
+                                        FXGL.getGameWorld().removeEntity(bullet2);
+                                    }
+                                }, Duration.seconds(0.5));
+                                FXGL.run(() -> {
+                                    if (FXGL.getGameWorld().getEntities().contains(bullet3)) {
+                                        FXGL.getGameWorld().removeEntity(bullet3);
+                                    }
+                                }, Duration.seconds(0.75));
+                                FXGL.run(() -> {
+                                    if (FXGL.getGameWorld().getEntities().contains(bullet4)) {
+                                        FXGL.getGameWorld().removeEntity(bullet4);
                                     }
                                 }, Duration.seconds(1));
                             } catch (Exception e) {
@@ -91,7 +122,7 @@ public class BulletSpawner {
                             enemy.addComponent(new RandomMoveComponent(new Rectangle2D(0, 0, FXGL.getAppWidth(), FXGL.getAppHeight() / 2), 100));
                         }
                         Entity bullet = FXGL.getGameWorld().create("striker_bullet", new SpawnData(enemy.getX() + 25, enemy.getY() + 40).put("angle", 0));
-                        FXGL.play("STRIKER.wav");
+                        FXGL.play("s00.wav");
                         bullet.setScaleX(1.1);
                         bullet.setScaleY(1.1);
                         FXGL.getGameWorld().addEntity(bullet);

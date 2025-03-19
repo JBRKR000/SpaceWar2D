@@ -61,7 +61,7 @@ public class InitSettings extends GameApplication {
     public static boolean isDebugEnabled = false;
     private Entity player;
     private static boolean godmode = false;
-    public static int wave = 5;  // Current wave
+    public static int wave = 4;  // Current wave
     public static int enemiesToDestroy = 10;  // Enemies to defeat per wave (adjustable)
     public static int enemiesDefeated = 0;
     public static int enemyCount = 0;
@@ -306,15 +306,16 @@ public class InitSettings extends GameApplication {
             if(!godmode) {
                 InitSettings.powerup++;
                 if(InitSettings.powerup%3 == 0 && InitSettings.powerup != 0) {
+                    FXGL.play("bonus2.wav");
                     powerupCounter++;
                     InitSettings.powerup = 0;
                     System.out.println(powerupCounter);
                 }
                 powerup.removeFromWorld();
                 isPowerupSpawned = false;
-                FXGL.play("powerup.wav");
+                FXGL.play("bonus.wav");
+                }
 
-            }
         });
 
     }

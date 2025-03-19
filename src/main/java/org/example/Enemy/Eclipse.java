@@ -32,9 +32,10 @@ public class Eclipse implements EntityFactory {
 
 
     public Eclipse() {
-        Image image = FXGL.image("enemy_1.png");
-        idle = new AnimationChannel(image, 6, 512 / 6, 512 / 7, Duration.seconds(1), 0, 3);
-        move = new AnimationChannel(image, 6, 512 / 6, 512 / 7, Duration.seconds(1), 5, 9);
+        Image enemy_idle = FXGL.image("enemy_1_idle_6x1.png");
+        Image enemy_moving = FXGL.image("enemy_1_moving_512x60.png");
+        idle = new AnimationChannel(enemy_idle, 6, 85, 60, Duration.seconds(1), 0, 5);
+        move = new AnimationChannel(enemy_moving, 6, 80, 60, Duration.seconds(2), 0, 5);
 
     }
 
@@ -49,7 +50,7 @@ public class Eclipse implements EntityFactory {
         AnimatedTexture texture = new AnimatedTexture(idle);
         Entity entity = entityBuilder(data)
                 .type(EntityType.ENEMY)
-                .bbox(new HitBox(BoundingShape.box((double) 512 / 6, (double) 512 / 7)))
+                .bbox(new HitBox(BoundingShape.box(85, 60)))
                 .scale(0.5, 0.5)
                 .view(hpView)
                 .with(hp)

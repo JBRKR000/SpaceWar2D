@@ -22,6 +22,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 import kotlin.Unit;
 import org.example.Bonus.*;
@@ -61,7 +62,7 @@ public class InitSettings extends GameApplication {
     public static boolean isDebugEnabled = false;
     private Entity player;
     private static boolean godmode = false;
-    public static int wave = 4;  // Current wave
+    public static int wave = 1;  // Current wave
     public static int enemiesToDestroy = 10;  // Enemies to defeat per wave (adjustable)
     public static int enemiesDefeated = 0;
     public static int enemyCount = 0;
@@ -403,7 +404,7 @@ public class InitSettings extends GameApplication {
 
 
 
-        backgroundMusic = FXGL.getAssetLoader().loadMusic("TerminatorBattle.mp3");
+        backgroundMusic = FXGL.getAssetLoader().loadMusic("TerminatorBattle.wav");
         backgroundMusic.getAudio().setVolume(0.06);
 //        backgroundMusic.getAudio().play();
 
@@ -685,7 +686,21 @@ public class InitSettings extends GameApplication {
         additionalview.setFitWidth(45);
         additionalview.setRotate(0);
         FXGL.addUINode(additionalview, 15, 1000);
+        Text fpsText;
+        // Dodaj tekst FPS do UI
+        fpsText = new Text();
+        fpsText.setTranslateX(10); // Ustaw pozycję X
+        fpsText.setTranslateY(50); // Ustaw pozycję Y
+        fpsText.setFill(Color.WHITE); // Ustaw kolor tekstu
+        fpsText.setStyle("-fx-font-size: 20px;"); // Ustaw styl tekstu
+        FXGL.addUINode(fpsText);
 
+        // Aktualizuj tekst FPS co klatkę
+        FXGL.getGameTimer().runAtInterval(() -> {
+            double fps = 1/ FXGL.tpf();
+            fpsText.setText("FPS: " + fps);
+        }, Duration.seconds(0.1));
+        
     }
 
 

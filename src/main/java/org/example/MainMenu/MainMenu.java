@@ -6,41 +6,45 @@ import com.almasb.fxgl.dsl.FXGL;
 import javafx.beans.binding.Bindings;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import java.util.Objects;
+import javafx.scene.text.Text;
 
 public class MainMenu extends FXGLMenu {
-    private MediaPlayer mediaPlayer;
+
     public MainMenu() {
         super(MenuType.MAIN_MENU);
         double appWidth = FXGL.getAppWidth();
         double appHeight = FXGL.getAppHeight();
-        BackgroundSize backgroundSize = new BackgroundSize(appWidth, appHeight, false, false, false, false);
+        BackgroundSize backgroundSize = new BackgroundSize(appWidth, appHeight, true, true, true, true);
         Image backgroundImage = new Image("assets/textures/background3.jpg");
         BackgroundImage background = new BackgroundImage(backgroundImage,
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.DEFAULT, backgroundSize);
-        Media media = new Media(Objects.requireNonNull(getClass().getResource("/assets/music/CosmicConquest.mp3")).toString());
-        mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-        mediaPlayer.setVolume(0.05);
-        mediaPlayer.play();
-        var button = new AsteroidsButton("START", () -> {
-            mediaPlayer.stop();
-            fireNewGame();
-        });
-        button.setTranslateX(FXGL.getAppWidth() / 2 - 200 / 2);
-        button.setTranslateY(FXGL.getAppHeight() / 2 - 40 / 2);
         getContentRoot().setBackground(new Background(background));
-        getContentRoot().getChildren().add(button);
+        Text title = FXGL.getUIFactoryService().newText("Space Invaders", Color.BLUEVIOLET, 48);
+        title.setTranslateX(appWidth / 2 - title.getLayoutBounds().getWidth() / 2);
+        title.setTranslateY(appHeight / 4);
+        getContentRoot().getChildren().add(title);
+        var startButton = new MenuButton("START", this::fireNewGame);
+        var highScoresButton = new MenuButton("HIGH SCORES", this::showHighScores);
+        var exitButton = new MenuButton("EXIT", this::fireExit);
+        startButton.setTranslateX(appWidth / 2 - 100);
+        startButton.setTranslateY(appHeight / 2 - 50);
+        highScoresButton.setTranslateX(appWidth / 2 - 100);
+        highScoresButton.setTranslateY(appHeight / 2);
+        exitButton.setTranslateX(appWidth / 2 - 100);
+        exitButton.setTranslateY(appHeight / 2 + 50);
+
+        getContentRoot().getChildren().addAll(startButton, highScoresButton, exitButton);
     }
 
-    private static class AsteroidsButton extends StackPane {
-        public AsteroidsButton(String name, Runnable action) {
+    private void showHighScores() {
+        // TODO: Implement high scores display logic
+    }
+
+    private static class MenuButton extends StackPane {
+        public MenuButton(String name, Runnable action) {
             var bg = new Rectangle(200, 40);
             bg.setStroke(Color.WHITE);
 

@@ -80,38 +80,65 @@ public class PlayerComponent extends Component {
         FXGL.run(this::spawnShoot, Duration.seconds(shootInterval.get()));
     }
 
+    //HOW FAST THE PLAYER CAN SHOOT
     private void updateShootInterval() {
-        if (powerupCounter < 4) {
-            shootInterval.set(0.4);
+        if (powerupCounter <= 4) {
+            shootInterval.set(0.35);
         } else if (powerupCounter == 5) {
-            shootInterval.set(0.3);
-        } else if (powerupCounter >= 6) {
-            shootInterval.set(0.3);
+            shootInterval.set(0.35);
+        } else {
+            shootInterval.set(0.35);
         }
     }
 
+    //SPAWN BULLETS DEPENDING ON THE POWERUP LEVEL
     public void spawnShoot() {
         var dir = Vec2.fromAngle(entity.getRotation() - 90);
         switch (powerupCounter) {
             case 1:
-                spawn("player_bullet", new SpawnData(entity.getX() - 20, entity.getY() - 30).put("dir", dir.toPoint2D()));
+                spawn("lvl1", new SpawnData(entity.getX() - 20, entity.getY() - 30).put("dir", dir.toPoint2D()));
+                spawn("lvl1", new SpawnData(entity.getX() + 5, entity.getY() - 30).put("dir", dir.toPoint2D()));
                 FXGL.play("shoot_player.wav");
                 break;
             case 2:
                 spawn("lvl2", new SpawnData(entity.getX() - 20, entity.getY() - 30).put("dir", dir.toPoint2D()));
+                spawn("lvl2", new SpawnData(entity.getX() - 7.5, entity.getY() - 30).put("dir", dir.toPoint2D()));
+                spawn("lvl2", new SpawnData(entity.getX() + 5, entity.getY() - 30).put("dir", dir.toPoint2D()));
                 FXGL.play("shoot_player.wav");
                 break;
             case 3:
-                spawn("lvl3", new SpawnData(entity.getX() - 20, entity.getY() - 30).put("dir", dir.toPoint2D()));
-                FXGL.play("shoot_player.wav");
+                spawn("lvl3", new SpawnData(entity.getX() + 15, entity.getY() - 30).put("dir", dir.toPoint2D()));
+                FXGL.play("b1.wav");
                 break;
             case 4:
-                spawn("lvl4", new SpawnData(entity.getX() + 5, entity.getY() - 30).put("dir", dir.toPoint2D()));
-                FXGL.play("player_bullet_lvl_4.wav");
+                spawn("lvl4", new SpawnData(entity.getX() + 15, entity.getY() - 30).put("dir", dir.toPoint2D()));
+                FXGL.play("b1.wav");
                 break;
             case 5:
-                spawn("lvl5", new SpawnData(entity.getX() + 5, entity.getY() - 30).put("dir", dir.toPoint2D()));
-                FXGL.play("player_bullet_lvl_4.wav");
+                spawn("lvl5", new SpawnData(entity.getX() + 15, entity.getY() - 30).put("dir", dir.toPoint2D()));
+                FXGL.play("b2.wav");
+                break;
+            case 6:
+                spawn("lvl6", new SpawnData(entity.getX() + 15, entity.getY() - 30).put("dir", dir.toPoint2D()));
+                FXGL.play("b2.wav");
+                break;
+            case 7:
+                spawn("lvl7", new SpawnData(entity.getX() + 15, entity.getY() - 30).put("dir", dir.toPoint2D()));
+                FXGL.play("b3.wav");
+                break;
+            case 8:
+                spawn("lvl8", new SpawnData(entity.getX() + 15, entity.getY() - 30).put("dir", dir.toPoint2D()));
+                FXGL.play("b3.wav");
+                break;
+            case 9:
+                spawn("lvl7", new SpawnData(entity.getX() + 15, entity.getY() - 30).put("dir", dir.toPoint2D()));
+                spawn("lvl5", new SpawnData(entity.getX() + 15, entity.getY() - 30).put("dir", dir.toPoint2D()));
+                FXGL.play("b3.wav");
+                break;
+            case 10:
+                spawn("lvl7", new SpawnData(entity.getX() + 15, entity.getY() - 30).put("dir", dir.toPoint2D()));
+                spawn("lvl6", new SpawnData(entity.getX() + 15, entity.getY() - 30).put("dir", dir.toPoint2D()));
+                FXGL.play("b3.wav");
                 break;
         }
     }

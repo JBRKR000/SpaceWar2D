@@ -181,16 +181,39 @@ public class InitSettings extends GameApplication {
 
             if (hp.getValue() > 1) {
                 bullet.removeFromWorld();
-                if(powerupCounter == 1){
-                    hp.damage(20);
-                } else if (powerupCounter == 4) {
-                    hp.damage(18);
-                } else if (powerupCounter == 5) {
-                    hp.damage(16);
-                } else if (powerupCounter == 2) {
-                    hp.damage(17);
-                } else if (powerupCounter == 3) {
-                    hp.damage(15);
+                switch (powerupCounter) {
+                    case 1:
+                        hp.damage(20);
+                        break;
+                    case 2:
+                        hp.damage(17);
+                        break;
+                    case 3:
+                        hp.damage(15);
+                        break;
+                    case 4:
+                        hp.damage(18);
+                        break;
+                    case 5:
+                        hp.damage(16);
+                        break;
+                    case 6:
+                        hp.damage(14);
+                        break;
+                    case 7:
+                        hp.damage(10);
+                        break;
+                    case 8:
+                        hp.damage(9);
+                        break;
+                    case 9:
+                        hp.damage(8);
+                        break;
+                    case 10:
+                        hp.damage(7);
+                        break;
+                    default:
+                        break;
                 }
 
 
@@ -325,9 +348,11 @@ public class InitSettings extends GameApplication {
                 InitSettings.powerup++;
                 if(InitSettings.powerup%3 == 0 && InitSettings.powerup != 0) {
                     FXGL.play("bonus2.wav");
-                    powerupCounter++;
-                    InitSettings.powerup = 0;
-                    System.out.println(powerupCounter);
+                    if(powerupCounter < 10){
+                        powerupCounter++;
+                        InitSettings.powerup = 0;
+                        System.out.println(powerupCounter);
+                    }
                 }
                 powerup.removeFromWorld();
                 isPowerupSpawned = false;

@@ -37,6 +37,7 @@ import org.example.Other.Entities;
 import org.example.Other.EntityType;
 import org.example.Player.PlayerComponent;
 import org.example.Player.PlayerEntity;
+import org.example.Score.HighScoreManager;
 import org.example.Score.ScoreEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -79,6 +80,22 @@ public class InitSettings extends GameApplication {
     public static Integer powerup = 0;
     public static Integer powerupCounter = 1;
     private static boolean hitsoundEnabled = false;
+    private final HighScoreManager highScoreManager = new HighScoreManager();
+
+
+    private void endGameState() {
+        int finalScore = FXGL.geti("score");
+        String message = "Game Over!\n" +
+                "Your score: " + finalScore + "\n" +
+                "Wave reached: " + wave + "\n" +
+                "Enter your name to save high score";
+        FXGL.getDialogService().showInputBox(message, playerName -> {
+            highScoreManager.writeHighScore(playerName, finalScore);
+            FXGL.getGameController().gotoMainMenu();
+        });
+    }
+
+
 
     public static void setWave(int newWave) {
         wave = newWave;
@@ -224,7 +241,7 @@ public class InitSettings extends GameApplication {
                         FXGL.play("player_explodes.wav");
                         player.removeFromWorld();
                         bullet.removeFromWorld();
-                        FXGL.getGameController().gotoMainMenu();
+                        endGameState();
                         enemyCount = 0;
                         wave = 1;
                     }

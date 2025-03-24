@@ -4,13 +4,19 @@ import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.dsl.FXGL;
 import javafx.beans.binding.Bindings;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import org.example.Score.HighScoreManager;
+
+import java.io.IOException;
+import java.util.List;
 
 public class MainMenu extends FXGLMenu {
+    private final HighScoreManager highScoreManager = new HighScoreManager();
 
     public MainMenu() {
         super(MenuType.MAIN_MENU);
@@ -39,8 +45,16 @@ public class MainMenu extends FXGLMenu {
         getContentRoot().getChildren().addAll(startButton, highScoresButton, exitButton);
     }
 
+
+
     private void showHighScores() {
-        // TODO: Implement high scores display logic
+        List<String> highScores = highScoreManager.readHighScores();
+        StringBuilder scoresText = new StringBuilder("High Scores:\n");
+        for (String score : highScores) {
+            scoresText.append(score).append("\n");
+        }
+
+        FXGL.getDialogService().showMessageBox(scoresText.toString());
     }
 
     private static class MenuButton extends StackPane {

@@ -41,6 +41,8 @@ import org.example.Score.HighScoreManager;
 import org.example.Score.ScoreEntity;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -118,7 +120,11 @@ public class InitSettings extends GameApplication {
             @NotNull
             @Override
             public FXGLMenu newMainMenu() {
-                return new MainMenu();
+                try {
+                    return new MainMenu();
+                } catch (IOException | FontFormatException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
@@ -454,7 +460,7 @@ public class InitSettings extends GameApplication {
         player = FXGL.spawn("player", (double) FXGL.getAppWidth() / 2 - 45, 500);
 
 
-        FXGL.getGameTimer().runOnceAfter(() -> FXGL.getDialogService().showMessageBox("Wave " + wave + " Started!"), Duration.seconds(1));
+        FXGL.getGameTimer().runOnceAfter(() -> FXGL.getDialogService().showMessageBox("Wave " + wave + " Started!"), Duration.seconds(0.5));
 
         run(() -> {
 

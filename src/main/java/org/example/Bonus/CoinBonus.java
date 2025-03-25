@@ -15,13 +15,14 @@ public class CoinBonus implements EntityFactory {
         var velocity = new Point2D(0, 1);
         var entity = entityBuilder(data)
                 .type(EntityType.COIN)
-                .scale(0.45, 0.45)
+                .scale(0.8, 0.8)
                 .viewWithBBox("coin.png")
                 .with(new OffscreenCleanComponent())
                 .with(new ProjectileComponent(velocity, 100))
                 .collidable()
                 .build();
         entity.setOnActive(() -> {
+            entity.rotateBy(-90);
         });
         return entity;
     }

@@ -21,7 +21,6 @@ public class Lightning implements EntityFactory {
         var entity = FXGL.entityBuilder(data)
                 .type(EntityType.LIGHTNING)
                 .scale(1, 1)
-                .rotate(180)
                 .viewWithBBox("lightning.png")
                 .with(new OffscreenCleanComponent())
                 .with(new ProjectileComponent(velocity, 0))

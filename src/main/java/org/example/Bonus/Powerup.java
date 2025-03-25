@@ -17,13 +17,14 @@ public class Powerup implements EntityFactory {
         var velocity = new Point2D(0, 1);
         var entity = entityBuilder(data)
                 .type(EntityType.POWERUP)
-                .scale(0.45, 0.45)
+                .scale(0.8, 0.8)
                 .viewWithBBox("powerup.png")
                 .with(new OffscreenCleanComponent())
                 .with(new ProjectileComponent(velocity, 200))
                 .collidable()
                 .build();
         entity.setOnActive(() -> {
+            entity.rotateBy(-180);
         });
         return entity;
     }

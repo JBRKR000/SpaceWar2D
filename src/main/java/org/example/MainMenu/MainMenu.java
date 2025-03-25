@@ -27,7 +27,7 @@ public class MainMenu extends FXGLMenu {
         BackgroundImage background = new BackgroundImage(backgroundImage,
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.DEFAULT, backgroundSize);
-        getContentRoot().setBackground(new Background(background));
+        
         Text title = FXGL.getUIFactoryService().newText("Space Invaders", Color.BLUEVIOLET, 48);
         title.setTranslateX(appWidth / 2 - title.getLayoutBounds().getWidth() / 2);
         title.setTranslateY(appHeight / 4);
@@ -41,7 +41,7 @@ public class MainMenu extends FXGLMenu {
         highScoresButton.setTranslateY(appHeight / 2);
         exitButton.setTranslateX(appWidth / 2 - 100);
         exitButton.setTranslateY(appHeight / 2 + 50);
-
+        getContentRoot().setBackground(new Background(background));
         getContentRoot().getChildren().addAll(startButton, highScoresButton, exitButton);
     }
 

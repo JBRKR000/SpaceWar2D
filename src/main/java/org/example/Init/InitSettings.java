@@ -450,8 +450,6 @@ public class InitSettings extends GameApplication {
         FXGL.getGameWorld().addEntityFactory(new Bomb());
 
 
-
-
         backgroundMusic = FXGL.getAssetLoader().loadMusic("TerminatorBattle.wav");
         backgroundMusic.getAudio().setVolume(0.06);
 //        backgroundMusic.getAudio().play();
@@ -460,7 +458,10 @@ public class InitSettings extends GameApplication {
         player = FXGL.spawn("player", (double) FXGL.getAppWidth() / 2 - 45, 500);
 
 
-        FXGL.getGameTimer().runOnceAfter(() -> FXGL.getDialogService().showMessageBox("Wave " + wave + " Started!"), Duration.seconds(0.5));
+        FXGL.getGameTimer().runOnceAfter(() -> {
+            FXGL.getDialogService().showMessageBox("Wave " + wave + " Started!");
+            FXGL.play("dialog.wav");
+            }, Duration.seconds(0.5));
 
         run(() -> {
 

@@ -80,7 +80,11 @@ public class MainMenu extends FXGLMenu {
             text.fillProperty().bind(
                     Bindings.when(hoverProperty()).then(Color.BLACK).otherwise(Color.WHITE)
             );
-            setOnMouseClicked(e -> action.run());
+            setOnMouseClicked(e -> {
+                action.run();
+                FXGL.play("menu_click.wav");
+
+            });
             getChildren().addAll(bg, text);
         }
     }

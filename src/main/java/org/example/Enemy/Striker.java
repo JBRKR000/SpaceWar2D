@@ -19,21 +19,24 @@ import javafx.scene.image.Image;
 import javafx.util.Duration;
 import org.example.Other.EntityType;
 
-import java.util.Random;
-
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class Striker implements EntityFactory {
     public static Point2D pos;
     private static final int MAX_HP = 100;
 
-    private AnimationChannel idle, move;
+    private AnimationChannel idle1, move1;
+    private AnimationChannel idle2, move2;
 
     public Striker(){
-        Image enemy_idle = FXGL.image("enemy_3.png");
-        Image enemy_moving = FXGL.image("enemy_3.png");
-        idle = new AnimationChannel(enemy_idle, 5,  44, 34, Duration.seconds(1), 0, 3);
-        move = new AnimationChannel(enemy_moving, 5, 44, 34, Duration.seconds(1), 0, 3);
+        Image enemy_idle1 = FXGL.image("enemy_3.png");
+        Image enemy_idle2 = FXGL.image("variant2.png");
+        Image enemy_moving1 = FXGL.image("enemy_3.png");
+        Image enemy_moving2 = FXGL.image("variant2.png");
+        idle1 = new AnimationChannel(enemy_idle1, 5,  44, 34, Duration.seconds(1), 0, 3);
+        move1 = new AnimationChannel(enemy_moving1, 5, 44, 34, Duration.seconds(1), 0, 3);
+        idle2 = new AnimationChannel(enemy_idle2, 5,  44, 34, Duration.seconds(1), 0, 2);
+        move2 = new AnimationChannel(enemy_moving2, 5, 44, 34, Duration.seconds(1), 0, 3);
     }
 
 
@@ -48,20 +51,30 @@ public class Striker implements EntityFactory {
         hpView.setTranslateY(55);
         hpView.setTranslateX(-15);
         hpView.currentValueProperty().bind(hp.valueProperty());
-        AnimatedTexture texture = new AnimatedTexture(idle);
-        texture.setScaleX(1.25);
-        texture.setScaleY(1.25);
+        AnimatedTexture texture1 = new AnimatedTexture(idle1);
+        AnimatedTexture texture2 = new AnimatedTexture(idle2);
+        texture2.setScaleX(1.25);
+        texture2.setScaleY(1.25);
+        texture1.setScaleX(1.25);
+        texture1.setScaleY(1.25);
         Entity entity = entityBuilder(data)
                 .type(EntityType.ENEMY)
                 .bbox(new HitBox(BoundingShape.box(55, 42.5)))
-//                .viewWithBBox("enemy_3.png")
                 .view(hpView)
                 .with(hp)
                 .with(new RandomMoveComponent(new Rectangle2D(0, 0, getAppWidth(), ((double) getAppHeight() /2)),100))
                 .collidable()
                 .build();
-        entity.addComponent(new EnemySetAngle(texture, idle, move));
-        entity.getViewComponent().addChild(texture);
+        switch (FXGL.random(1,2)){
+            case 1:
+                entity.addComponent(new EnemySetAngle(texture1, idle1, move1));
+                entity.getViewComponent().addChild(texture1);
+                break;
+            case 2:
+                entity.addComponent(new EnemySetAngle(texture2, idle2, move2));
+                entity.getViewComponent().addChild(texture2);
+                break;
+        }
         pos = new Point2D(entity.getX(),entity.getY());
         return entity;
 

@@ -28,18 +28,9 @@ public class MainMenu extends FXGLMenu {
         double appHeight = 1080;
         var bgImage = new Image("assets/textures/background4.jpg");
         var bgView = new ImageView(bgImage);
-
-        Font customFont = Font.loadFont("assets/fonts/f.ttf", 128);
         bgView.setFitWidth(appWidth);
         bgView.setFitHeight(appHeight);
         getContentRoot().getChildren().add(bgView);
-       
-        Text title = new Text("Space Invaders");
-        title.setFont(customFont);
-        title.setFill(Color.BLUEVIOLET);
-        title.setTranslateX(appWidth / 2 - title.getLayoutBounds().getWidth() / 2);
-        title.setTranslateY(appHeight / 4);
-        
         var startButton = new MenuButton("START", this::fireNewGame);
         var highScoresButton = new MenuButton("HIGH SCORES", this::showHighScores);
         var exitButton = new MenuButton("EXIT", this::fireExit);
@@ -49,8 +40,6 @@ public class MainMenu extends FXGLMenu {
         highScoresButton.setTranslateY(appHeight / 2);
         exitButton.setTranslateX(appWidth / 2 - 100);
         exitButton.setTranslateY(appHeight / 2 + 50);
-        
-        getContentRoot().getChildren().add(title);
         getContentRoot().getChildren().addAll(startButton, highScoresButton, exitButton);
     }
 

@@ -144,7 +144,8 @@ public class PlayerComponent extends Component {
     }
 
     public void usePowerRocket() {
-        var dir = Vec2.fromAngle(entity.getRotation() + 90);
-        spawn("Bomb", new SpawnData(entity.getX() - 350, entity.getY() - 375).put("dir", dir.toPoint2D()));
+        var dir = Vec2.fromAngle(entity.getRotation());
+        spawn("rocket", new SpawnData(entity.getX() - 10, entity.getY()).put("dir", dir.toPoint2D()));
+        spawn("rocket", new SpawnData(entity.getX() + 50, entity.getY()).put("dir", dir.toPoint2D()));
     }
 }

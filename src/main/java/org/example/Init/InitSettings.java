@@ -84,7 +84,7 @@ public class InitSettings extends GameApplication {
     public int bonus;
     private boolean spacebarPressed = false;
     public static Integer powerup = 0;
-    public static Integer powerupCounter = 1;
+    public static Integer powerupCounter = 10;
     private static boolean hitsoundEnabled = false;
     private final HighScoreManager highScoreManager = new HighScoreManager();
     private static final int SHAKE_POWER = 5;
@@ -112,6 +112,7 @@ public class InitSettings extends GameApplication {
                 "Your score: " + finalScore + "\n" +
                 "Wave reached: " + wave + "\n" +
                 "Enter your name to save high score";
+        FXGL.play("death_music.wav");
         FXGL.getDialogService().showInputBox(message, playerName -> {
             highScoreManager.writeHighScore(playerName, finalScore);
             FXGL.getGameController().gotoMainMenu();

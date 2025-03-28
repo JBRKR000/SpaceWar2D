@@ -13,13 +13,10 @@ public class RandomEnemyPicker {
     public static String picker(){
         String pick = null;
         Random random = new Random();
-
         if(wave <= 3){
             enemiesToDestroy = 8;
             List<String> enemyList1to3 = new ArrayList<>();
             enemyList1to3.add("inferno");
-//            enemyList1to3.add("fighter");
-            enemyList1to3.add("faker");
             enemyList1to3.add("striker");
             pick =  enemyList1to3.get(random.nextInt(enemyList1to3.size()));
         }
@@ -27,6 +24,7 @@ public class RandomEnemyPicker {
             enemiesToDestroy = 6;
             List<String> enemyList4to6 = new ArrayList<>();
             enemyList4to6.add("eclipse");
+            enemyList4to6.add("faker");
             enemyList4to6.add("void");
             pick = enemyList4to6.get(random.nextInt(enemyList4to6.size()));
         }
@@ -35,6 +33,7 @@ public class RandomEnemyPicker {
             List<String> enemyList4to6 = new ArrayList<>();
             enemyList4to6.add("eclipse");
             enemyList4to6.add("void");
+            enemyList4to6.add("fighter");
             enemyList4to6.add("inferno");
             enemyList4to6.add("striker");
             enemyList4to6.add("fighter");

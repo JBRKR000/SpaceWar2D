@@ -38,7 +38,7 @@ public class BulletSpawner {
 
     public void spawnBulletsFromEnemies() {
         for (Entity enemy : enemies.keySet()) {
-            double delay = FXGL.random(0.5, 3); //JAK SZYBKO MAJĄ PRZECIWNICY STRZELAĆ
+            double delay = FXGL.random(0.5, 3);
             FXGL.getGameTimer().runOnceAfter(() -> {
                 String type = enemies.get(enemy);
                 if (type != null && type.equals("inferno")) {
@@ -54,6 +54,32 @@ public class BulletSpawner {
                         FXGL.getGameWorld().addEntity(bullet);
                     }
                 }
+
+                if (type != null && type.equals("fighter")) {
+                    if (!enemy.hasComponent(RandomMoveComponent.class)) {
+                        enemy.addComponent(new RandomMoveComponent(new Rectangle2D(0, 0, FXGL.getAppWidth(), FXGL.getAppHeight() / 2), 100));
+                    }
+                    RandomMoveComponent moveComponent = enemy.getComponent(RandomMoveComponent.class);
+                    Entity bullet = FXGL.getGameWorld().create("fighter_bullet", new SpawnData(enemy.getX() + 25, enemy.getY() + 40).put("angle", 0));
+                    FXGL.play("fighter.wav");
+                    bullet.setScaleX(1.1);
+                    bullet.setScaleY(1.1);
+                    FXGL.getGameWorld().addEntity(bullet);
+
+                }
+                if (type != null && type.equals("faker")) {
+                    if (!enemy.hasComponent(RandomMoveComponent.class)) {
+                        enemy.addComponent(new RandomMoveComponent(new Rectangle2D(0, 0, FXGL.getAppWidth(), FXGL.getAppHeight() / 2), 100));
+                    }
+                    RandomMoveComponent moveComponent = enemy.getComponent(RandomMoveComponent.class);
+                    Entity bullet = FXGL.getGameWorld().create("faker_bullet", new SpawnData(enemy.getX() + 25, enemy.getY() + 40).put("angle", 0));
+                    FXGL.play("faker_bullet.wav");
+                    bullet.setScaleX(1.1);
+                    bullet.setScaleY(1.1);
+                    FXGL.getGameWorld().addEntity(bullet);
+
+                }
+
                 if (type != null && type.equals("void")) {
                     if (FXGL.getGameWorld().getEntities().contains(enemy)) {
                         if (!enemy.hasComponent(RandomMoveComponent.class)) {

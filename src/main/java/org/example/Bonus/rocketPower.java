@@ -9,11 +9,27 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import javafx.geometry.Point2D;
 import org.example.Other.EntityType;
+import org.jetbrains.annotations.NotNull;
 
 public class rocketPower implements EntityFactory {
     @Spawns("rocket")
     public Entity rocket(SpawnData data) {
+        var velocity = new Point2D(1, -1);
+        return getEntity(data, velocity);
+    }
+    @Spawns("rocket3")
+    public Entity rocket3(SpawnData data) {
         var velocity = new Point2D(0, -1);
+        return getEntity(data, velocity);
+    }
+    @Spawns("rocket2")
+    public Entity rocket2(SpawnData data) {
+        var velocity = new Point2D(-1, -1);
+        return getEntity(data, velocity);
+    }
+
+    @NotNull
+    private Entity getEntity(SpawnData data, Point2D velocity) {
         var entity = FXGL.entityBuilder(data)
                 .type(EntityType.ROCKET)
                 .scale(1, 1)

@@ -15,7 +15,10 @@ public class Entities implements EntityFactory {
         return FXGL.entityBuilder(data)
                 .view("background.jpg")
                 .scale(1, 1)
+                .zIndex(-100)
+                .neverUpdated()
                 .build();
+
     }
     @Spawns("background2")
     public Entity background2(SpawnData data) {

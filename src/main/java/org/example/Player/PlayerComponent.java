@@ -19,6 +19,11 @@ public class PlayerComponent extends Component {
     private AnimatedTexture texture;
     private AnimationChannel idle, moveLeft, moveRight;
     private double prevX, prevY;
+    private double speed = 10;
+
+    public void setMovementSpeed(double speed) {
+        this.speed = speed;
+    }
 
     public PlayerComponent() {
         Image image = FXGL.image("player_ship.png");
@@ -48,7 +53,7 @@ public class PlayerComponent extends Component {
 
     public void moveLeft() {
         if (entity.getX() > 10) {
-            entity.translate(-10, 0);
+            entity.translate(-speed, 0);
             if (texture.getAnimationChannel() != moveLeft) {
                 texture.loopAnimationChannel(moveLeft);
             }
@@ -57,7 +62,7 @@ public class PlayerComponent extends Component {
 
     public void moveRight() {
         if (entity.getX() < FXGL.getAppWidth() - 45) {
-            entity.translate(10, 0);
+            entity.translate(speed, 0);
             if (texture.getAnimationChannel() != moveRight) {
                 texture.loopAnimationChannel(moveRight);
             }
@@ -66,13 +71,13 @@ public class PlayerComponent extends Component {
 
     public void moveUp() {
         if (entity.getY() < FXGL.getAppHeight() - 50) {
-            entity.translate(0, 10);
+            entity.translate(0, speed);
         }
     }
 
     public void moveDown() {
         if (entity.getY() > (double) FXGL.getAppHeight() / 2) {
-            entity.translate(0, -10);
+            entity.translate(0, -speed);
         }
     }
 
@@ -146,6 +151,12 @@ public class PlayerComponent extends Component {
     public void usePowerRocket() {
         var dir = Vec2.fromAngle(entity.getRotation());
         spawn("rocket", new SpawnData(entity.getX() - 10, entity.getY()).put("dir", dir.toPoint2D()));
-        spawn("rocket", new SpawnData(entity.getX() + 50, entity.getY()).put("dir", dir.toPoint2D()));
+        spawn("rocket", new SpawnData(entity.getX() - 75, entity.getY()).put("dir", dir.toPoint2D()));
+        spawn("rocket2", new SpawnData(entity.getX() + 50, entity.getY()).put("dir", dir.toPoint2D()));
+        spawn("rocket2", new SpawnData(entity.getX() + 110, entity.getY()).put("dir", dir.toPoint2D()));
+        //todo: change coordinates of rocket3
+        spawn("rocket3", new SpawnData(entity.getX() + 5, entity.getY()).put("dir", dir.toPoint2D()));
+        spawn("rocket3", new SpawnData(entity.getX() + 35, entity.getY()).put("dir", dir.toPoint2D()));
     }
+
 }

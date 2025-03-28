@@ -3,6 +3,7 @@ import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
+import com.almasb.fxgl.app.scene.GameView;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.audio.*;
 import com.almasb.fxgl.core.math.Vec2;
@@ -58,6 +59,7 @@ import static com.almasb.fxgl.dsl.FXGLForKtKt.spawn;
 import static com.sun.javafx.animation.TickCalculation.TICKS_PER_SECOND;
 import static org.example.Enemy.RandomEnemyPicker.picker;
 
+import static org.example.Other.Entities.pickBackground;
 import static org.example.Player.PlayerEntity.hp_;
 
 
@@ -85,9 +87,9 @@ public class InitSettings extends GameApplication {
     public static Integer powerupCounter = 1;
     private static boolean hitsoundEnabled = false;
     private final HighScoreManager highScoreManager = new HighScoreManager();
+    private static final int SHAKE_POWER = 5;
 
 
-    //BONUSES LOGIC
     private enum PowerupType {
         ROCKET, LASER, BOMB
     }
@@ -155,6 +157,11 @@ public class InitSettings extends GameApplication {
 
     @Override
     protected void initPhysics() {
+
+        // Add the background image first
+
+
+
         // ------ SECTION ABOUT RANDOMNESS OF BONUSES ------
         AtomicInteger randomHealth = new AtomicInteger();
         run(()->{
@@ -251,6 +258,7 @@ public class InitSettings extends GameApplication {
                 FXGL.spawn("light_explosion", new SpawnData(enemy.getX()+30+FXGL.random(-10,20), enemy.getY()+20+FXGL.random(10,20)));
             } else {
                 FXGL.play("enemy_boom.wav");
+                FXGL.getGameScene().getViewport().shake(SHAKE_POWER, 0.01);
                 if(FXGL.random(1,2) == 1){ //TODO: Change to smaller %
                     FXGL.spawn("bonus_drop", new SpawnData(enemy.getX(), enemy.getY()));
                 }
@@ -281,8 +289,8 @@ public class InitSettings extends GameApplication {
         });
 
         onCollisionBegin(EntityType.ENEMY_BULLET, EntityType.PLAYER, (bullet, player) -> {
-            if(!godmode) {
-                try{
+            if (!godmode) {
+                try {
                     var hp = player.getComponent(HealthIntComponent.class);
                     hp_ = hp.getValue();
                     if (hp.getValue() > 1) {
@@ -297,7 +305,39 @@ public class InitSettings extends GameApplication {
                         enemyCount = 0;
                         wave = 1;
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        });
+        onCollisionBegin(EntityType.FAKER_BULLET, EntityType.PLAYER, (faker_bullet, player) -> {
+            if (!godmode) {
+                try {
+                    var hp = player.getComponent(HealthIntComponent.class);
+                    hp_ = hp.getValue();
+                    if (hp.getValue() > 1) {
+                        faker_bullet.removeFromWorld();
+                        hp.damage(1);
+                        FXGL.play("userhit.wav");
+
+                        var playerComponent = player.getComponent(PlayerComponent.class);
+                        playerComponent.setMovementSpeed(2);
+                        FXGL.runOnce(() -> playerComponent.setMovementSpeed(10), Duration.seconds(3));
+                        FXGL.play("slow.wav");
+                        FXGL.runOnce(()->{
+                            FXGL.play("rev_slow.wav");
+                        }, Duration.seconds(3));
+
+
+                    } else {
+                        FXGL.play("player_explodes.wav");
+                        player.removeFromWorld();
+                        faker_bullet.removeFromWorld();
+                        endGameState();
+                        enemyCount = 0;
+                        wave = 1;
+                    }
+                } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
             }
@@ -338,7 +378,11 @@ public class InitSettings extends GameApplication {
                 case 0:
                     var dir = Vec2.fromAngle(player.getRotation());
                     spawn("rocket", new SpawnData(player.getX() - 10, player.getY()).put("dir", dir.toPoint2D()));
-                    spawn("rocket", new SpawnData(player.getX() + 50, player.getY()).put("dir", dir.toPoint2D()));
+                    spawn("rocket", new SpawnData(player.getX() - 75, player.getY()).put("dir", dir.toPoint2D()));
+                    spawn("rocket2", new SpawnData(player.getX() + 50, player.getY()).put("dir", dir.toPoint2D()));
+                    spawn("rocket2", new SpawnData(player.getX() + 110, player.getY()).put("dir", dir.toPoint2D()));
+                    spawn("rocket3", new SpawnData(player.getX() + 5, player.getY()).put("dir", dir.toPoint2D()));
+                    spawn("rocket3", new SpawnData(player.getX() + 35, player.getY()).put("dir", dir.toPoint2D()));
                     break;
                 case 1:
                     FXGL.spawn("lightning", new SpawnData(player.getX(), player.getY()));
@@ -355,6 +399,7 @@ public class InitSettings extends GameApplication {
                 hp.damage(hp.getValue()/2);
                 FXGL.spawn("explosion", new SpawnData(enemy.getX(), enemy.getY()));
                 FXGL.play("enemy_boom.wav");
+                FXGL.getGameScene().getViewport().shake(SHAKE_POWER, 0.01);
             }else {
                 enemy.removeFromWorld();
                 enemiesDefeated++;
@@ -363,6 +408,7 @@ public class InitSettings extends GameApplication {
                 FXGL.inc("score", +39);
                 FXGL.spawn("explosion", new SpawnData(enemy.getX(), enemy.getY()));
                 FXGL.play("enemy_boom.wav");
+                FXGL.getGameScene().getViewport().shake(SHAKE_POWER, 0.01);
                 bulletSpawner.removeEnemy(enemy);
                 isEnemySpawned = false;
             }
@@ -383,6 +429,7 @@ public class InitSettings extends GameApplication {
                 FXGL.inc("score", +45);
                 FXGL.spawn("explosion", new SpawnData(enemy.getX(), enemy.getY()));
                 FXGL.play("enemy_boom.wav");
+                FXGL.getGameScene().getViewport().shake(SHAKE_POWER, 0.01);
                 bulletSpawner.removeEnemy(enemy);
                 isEnemySpawned = false;
             }
@@ -403,6 +450,7 @@ public class InitSettings extends GameApplication {
                 FXGL.spawn("light_explosion", new SpawnData(enemy.getX()+30+FXGL.random(-10,20), enemy.getY()+20+FXGL.random(10,20)));
             } else {
                 FXGL.play("enemy_boom.wav");
+                FXGL.getGameScene().getViewport().shake(SHAKE_POWER, 0.01);
                 enemy.removeFromWorld();
                 bomb.removeFromWorld();
                 enemiesDefeated++;
@@ -505,6 +553,8 @@ public class InitSettings extends GameApplication {
 
     @Override
     protected void initGame() {
+
+        addBackground();
         Random random = new Random();
         FXGL.getSettings().setGlobalSoundVolume(0.1);
         FXGL.getGameWorld().addEntityFactory(new Entities());
@@ -530,18 +580,22 @@ public class InitSettings extends GameApplication {
         FXGL.getGameWorld().addEntityFactory(new Lightning());
         FXGL.getGameWorld().addEntityFactory(new Bomb());
         FXGL.getGameWorld().addEntityFactory(new BonusDrop());
+        FXGL.getGameWorld().addEntityFactory(new Fighter());
+        FXGL.getGameWorld().addEntityFactory(new FighterBullet());
+        FXGL.getGameWorld().addEntityFactory(new Faker());
+        FXGL.getGameWorld().addEntityFactory(new FakerBullet());
 
 
         backgroundMusic = FXGL.getAssetLoader().loadMusic("TerminatorBattle.wav");
         backgroundMusic.getAudio().setVolume(0.06);
 //        backgroundMusic.getAudio().play();
 
-        FXGL.spawn("background");
         player = FXGL.spawn("player", (double) FXGL.getAppWidth() / 2 - 45, 500);
 
 
         FXGL.getGameTimer().runOnceAfter(() -> {
             FXGL.getDialogService().showMessageBox("Wave " + wave + " Started!");
+
             FXGL.play("dialog.wav");
             }, Duration.seconds(0.5));
 
@@ -569,6 +623,7 @@ public class InitSettings extends GameApplication {
                         }catch (Exception e){
                             System.out.println("No enemies left");
                         }
+                        addBackground();
                         enemiesDefeated = 0;
                         enemyCount = 0;
                         FXGL.inc("waveText", +1);
@@ -632,7 +687,6 @@ public class InitSettings extends GameApplication {
 
     @Override
     protected void initUI() {
-
         initializeConsole();
         // ------------ DEBUG UI ------------
         // TODO: remove this in production!
@@ -831,13 +885,49 @@ public class InitSettings extends GameApplication {
             double fps = 1/ FXGL.tpf();
             fpsText.setText("FPS: " + fps);
         }, Duration.seconds(0.1));
-        
+
     }
 
 
 
     public void toggleEveryEnemyHas1HP() {
     }
+    private void addBackground() {
+        String backgroundPath1 = "assets/textures/background.jpg";
+        String backgroundPath2 = "assets/textures/background2.jpg";
+        String backgroundPath3 = "assets/textures/background3.jpg";
+        String backgroundPath4 = "assets/textures/background4.jpg";
+        String backgroundPath5 = "assets/textures/background5.jpg";
+        URL backgroundUrl = null;
+        switch (wave){
+            case 1: backgroundUrl = ResourceLoader.getResource(backgroundPath1); break;
+            case 2:
+            case 3:
+                backgroundUrl = ResourceLoader.getResource(backgroundPath2); break;
+            case 4:
+            case 5:
+            case 6:
+                backgroundUrl = ResourceLoader.getResource(backgroundPath3); break;
+            case 7:
+            case 8:
+            case 9:
+                backgroundUrl = ResourceLoader.getResource(backgroundPath4); break;
+            case 10: backgroundUrl = ResourceLoader.getResource(backgroundPath5); break;
+        }
+
+        if (backgroundUrl == null) {
+            throw new IllegalArgumentException("Invalid URL: Resource not found");
+        }
+        ImageView background = new ImageView(new Image(backgroundUrl.toExternalForm()));
+        double margin = 100;
+        background.setFitWidth(FXGL.getAppWidth() + margin * 2);
+        background.setFitHeight(FXGL.getAppHeight() + margin * 2);
+        background.setTranslateX(-margin);
+        background.setTranslateY(-margin);
+        FXGL.getGameScene().addGameView(new GameView(background, Integer.MIN_VALUE));
+    }
+
+
 
 
 }

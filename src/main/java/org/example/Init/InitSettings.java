@@ -17,7 +17,6 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.beans.binding.Bindings;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -49,6 +48,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -58,9 +58,9 @@ import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.spawn;
 import static com.sun.javafx.animation.TickCalculation.TICKS_PER_SECOND;
 import static org.example.Enemy.RandomEnemyPicker.picker;
-
-import static org.example.Other.Entities.pickBackground;
 import static org.example.Player.PlayerEntity.hp_;
+
+
 
 
 public class InitSettings extends GameApplication {
@@ -69,12 +69,11 @@ public class InitSettings extends GameApplication {
     public static boolean isDebugEnabled = false;
     private Entity player;
     private static boolean godmode = false;
-    public static int wave = 1;  // Current wave
+    public static int wave = 10;  // Current wave
     public static int enemiesToDestroy = 10;  // Enemies to defeat per wave (adjustable)
     public static int enemiesDefeated = 0;
     public static int enemyCount = 0;
     private final BulletSpawner bulletSpawner = new BulletSpawner();
-    private Music backgroundMusic;
     private int maxPlayers = 5;
     public String enemyType;
     public static boolean isCoinSpawned = false;
@@ -82,32 +81,29 @@ public class InitSettings extends GameApplication {
     public static boolean isEnemySpawned = false;
     public static boolean isPowerupSpawned = false;
     public int bonus;
-    private boolean spacebarPressed = false;
+    public static boolean spacebarPressed = false;
     public static Integer powerup = 0;
-    public static Integer powerupCounter = 10;
+    public static Integer powerupCounter = 1;
     private static boolean hitsoundEnabled = false;
     private final HighScoreManager highScoreManager = new HighScoreManager();
     private static final int SHAKE_POWER = 5;
+    private static double VOLUME = 0.20;
+    private static Music currentMusic;
+    private static List<String> waves_musicList;
+    private int previousWave = 0;
 
 
-    private enum PowerupType {
-        ROCKET, LASER, BOMB
+
+    private void checkWaveChange() {
+        if (wave != previousWave) {
+            onWaveChange();
+            previousWave = wave;
+        }
     }
-    private final static int ROCKET_COUNTER = 4;
-    private final static int LASER_COUNTER = 2;
-    private final static int BOMB_COUNTER = 3;
-    private static int bonusCounter = 0;
-    public static int getBonusCounter() {
-        return bonusCounter;
-    }
-    public static void setBonusCounter(int bonusCounter) {
-        InitSettings.bonusCounter = bonusCounter;
-    }
-
-
 
     private void endGameState() {
         int finalScore = FXGL.geti("score");
+        currentMusic.getAudio().stop();
         String message = "Game Over!\n" +
                 "Your score: " + finalScore + "\n" +
                 "Wave reached: " + wave + "\n" +
@@ -120,10 +116,10 @@ public class InitSettings extends GameApplication {
     }
 
 
-
     public static void setWave(int newWave) {
         wave = newWave;
         System.out.println("Wave set to " + wave);
+
     }
 
     public void initSettings(GameSettings settings) {
@@ -134,6 +130,7 @@ public class InitSettings extends GameApplication {
         settings.setVersion("1.3.25.12.a");
         settings.setFullScreenAllowed(true);
         settings.setFullScreenFromStart(true);
+        settings.setAppIcon("icon.png");
         settings.setCloseConfirmation(false); // TODO: Change to true
         settings.setEntityPreloadEnabled(true);
         settings.setTicksPerSecond(TICKS_PER_SECOND / 100); // 60FPS locked
@@ -149,6 +146,9 @@ public class InitSettings extends GameApplication {
                 }
             }
         });
+
+        waves_musicList = List.of("boss_music.wav", "ShadowsFromTheStars.mp3", "music_1.wav", "TerminatorBattle.mp3", "music_2.mp3", "music_3.wav", "music_4.mp3");
+
     }
 
     public static void toggleGodMode() {
@@ -156,56 +156,108 @@ public class InitSettings extends GameApplication {
         System.out.println("God mode: " + (godmode ? "enabled" : "disabled"));
     }
 
+
+
+
+    private static String currentMusicFile = "";
+    private static void playMusicForWave(int wave) {
+        String musicFile = "";
+        switch (wave) {
+            case 1:
+            case 2:
+                musicFile = waves_musicList.get(4);
+                VOLUME = 0.20;
+                break;
+            case 3:
+            case 4:
+                musicFile = waves_musicList.get(2);
+                VOLUME = 0.10;
+                break;
+            case 5:
+            case 6:
+                musicFile = waves_musicList.get(3);
+                VOLUME = 0.20;
+                break;
+            case 7:
+                musicFile = waves_musicList.get(5);
+                VOLUME = 0.10;
+                break;
+            case 8:
+                musicFile = waves_musicList.get(1);
+                VOLUME = 0.10;
+                break;
+            case 9:
+                musicFile = waves_musicList.get(6);
+                VOLUME = 0.20;
+                break;
+            case 10:
+                musicFile = waves_musicList.get(0);
+                VOLUME = 0.20;
+                break;
+        }
+
+        if (!musicFile.equals(currentMusicFile)) {
+            if (currentMusic != null) {
+                FXGL.getAudioPlayer().stopMusic(currentMusic);
+            }
+            currentMusic = FXGL.getAssetLoader().loadMusic(musicFile);
+            FXGL.getAudioPlayer().loopMusic(currentMusic);
+            currentMusic.getAudio().setVolume(VOLUME);
+            currentMusicFile = musicFile;
+        }
+    }
+
+
+
+
+
+
+
     @Override
     protected void initPhysics() {
-
-        // Add the background image first
-
-
-
         // ------ SECTION ABOUT RANDOMNESS OF BONUSES ------
         AtomicInteger randomHealth = new AtomicInteger();
-        run(()->{
-            if(wave < 3){
+        run(() -> {
+            if (wave < 3) {
                 randomHealth.set(FXGL.random(1, 7));
             }
-            if(wave >= 3 && wave < 8){
+            if (wave >= 3 && wave < 8) {
                 randomHealth.set(FXGL.random(1, 10));
             }
-            if(wave > 8 && wave < 11){
+            if (wave > 8 && wave < 11) {
                 randomHealth.set(FXGL.random(1, 12));
             }
 
-        },Duration.seconds(0.1));
+        }, Duration.seconds(0.1));
 
 
         AtomicInteger randomCoin = new AtomicInteger();
-        run(()->{
-            if(wave < 3){
+        run(() -> {
+            if (wave < 3) {
                 randomCoin.set(FXGL.random(1, 5));
             }
-            if(wave >= 3 && wave < 8){
+            if (wave >= 3 && wave < 8) {
                 randomCoin.set(FXGL.random(1, 8));
             }
-            if(wave > 8 && wave < 11){
+            if (wave > 8 && wave < 11) {
                 randomCoin.set(FXGL.random(1, 10));
             }
 
-        },Duration.seconds(0.1));
+        }, Duration.seconds(0.1));
 
         AtomicInteger randomPowerUp = new AtomicInteger();
-        run(()->{
-            if(wave < 3){
+        run(() -> {
+            if (wave < 3) {
                 randomPowerUp.set(FXGL.random(1, 6));
             }
-            if(wave >= 3 && wave < 8){
+            if (wave >= 3 && wave < 8) {
                 randomPowerUp.set(FXGL.random(1, 4));
             }
-            if(wave > 8 && wave < 11){
+            if (wave > 8 && wave < 11) {
                 randomPowerUp.set(FXGL.random(1, 8));
             }
 
-        },Duration.seconds(0.1));
+        }, Duration.seconds(0.1));
 
         // ------ SECTION ABOUT RANDOMNESS OF BONUSES ------
 
@@ -250,17 +302,17 @@ public class InitSettings extends GameApplication {
                 }
 
 
-                if(!hitsoundEnabled){
+                if (!hitsoundEnabled) {
                     FXGL.play("enemy_hit.wav");
                     hitsoundEnabled = true;
                     FXGL.runOnce(() -> hitsoundEnabled = false, Duration.seconds(0.05));
                 }
 
-                FXGL.spawn("light_explosion", new SpawnData(enemy.getX()+30+FXGL.random(-10,20), enemy.getY()+20+FXGL.random(10,20)));
+                FXGL.spawn("light_explosion", new SpawnData(enemy.getX() + 30 + FXGL.random(-10, 20), enemy.getY() + 20 + FXGL.random(10, 20)));
             } else {
                 FXGL.play("enemy_boom.wav");
                 FXGL.getGameScene().getViewport().shake(SHAKE_POWER, 0.01);
-                if(FXGL.random(1,2) == 1){ //TODO: Change to smaller %
+                if (FXGL.random(1, 2) == 1) { //TODO: Change to smaller %
                     FXGL.spawn("bonus_drop", new SpawnData(enemy.getX(), enemy.getY()));
                 }
                 enemy.removeFromWorld();
@@ -274,15 +326,15 @@ public class InitSettings extends GameApplication {
                 isEnemySpawned = false;
 
 
-                if(randomHealth.get() == 2 && randomCoin.get() != 1) {
+                if (randomHealth.get() == 2 && randomCoin.get() != 1) {
                     FXGL.spawn("health_bonus", new SpawnData(enemy.getX(), enemy.getY()));
                     isHealthSpawned = true;
                 }
-                if(randomCoin.get() == 1 && randomHealth.get() != 2) {
+                if (randomCoin.get() == 1 && randomHealth.get() != 2) {
                     FXGL.spawn("coin_bonus", new SpawnData(enemy.getX(), enemy.getY()));
                     isCoinSpawned = true;
                 }
-                if(randomPowerUp.get() == 3) {
+                if (randomPowerUp.get() == 3) {
                     FXGL.spawn("powerup", new SpawnData(enemy.getX(), enemy.getY()));
                     isPowerupSpawned = true;
                 }
@@ -325,7 +377,7 @@ public class InitSettings extends GameApplication {
                         playerComponent.setMovementSpeed(2);
                         FXGL.runOnce(() -> playerComponent.setMovementSpeed(10), Duration.seconds(3));
                         FXGL.play("slow.wav");
-                        FXGL.runOnce(()->{
+                        FXGL.runOnce(() -> {
                             FXGL.play("rev_slow.wav");
                         }, Duration.seconds(3));
 
@@ -345,16 +397,16 @@ public class InitSettings extends GameApplication {
         });
 
         onCollisionBegin(EntityType.HEALTH, EntityType.PLAYER, (health, player) -> {
-            if(!godmode) {
+            if (!godmode) {
                 var hp = player.getComponent(HealthIntComponent.class);
 
                 if (hp.getValue() > 20) {
                     health.removeFromWorld();
                     isHealthSpawned = false;
-                }else{
+                } else {
                     health.removeFromWorld();
                     isHealthSpawned = false;
-                    hp.setValue(hp.getValue()+2);
+                    hp.setValue(hp.getValue() + 2);
                     FXGL.spawn("scoreText", new SpawnData(health.getX(), health.getY()).put("text", "+15"));
                     FXGL.inc("score", +15);
                     FXGL.play("health.wav");
@@ -363,7 +415,7 @@ public class InitSettings extends GameApplication {
             }
         });
         onCollisionBegin(EntityType.COIN, EntityType.PLAYER, (coin, player) -> {
-            if(!godmode) {
+            if (!godmode) {
                 coin.removeFromWorld();
                 isCoinSpawned = false;
                 FXGL.spawn("scoreText", new SpawnData(coin.getX(), coin.getY()).put("text", "+" + bonus));
@@ -375,7 +427,7 @@ public class InitSettings extends GameApplication {
         onCollisionBegin(EntityType.BONUS, EntityType.PLAYER, (bonus, player) -> {
             bonus.removeFromWorld();
             FXGL.play("bonus2.wav");
-            switch (FXGL.random(0,2)){
+            switch (FXGL.random(0, 2)) {
                 case 0:
                     var dir = Vec2.fromAngle(player.getRotation());
                     spawn("rocket", new SpawnData(player.getX() - 10, player.getY()).put("dir", dir.toPoint2D()));
@@ -394,14 +446,14 @@ public class InitSettings extends GameApplication {
             }
 
         });
-        onCollisionBegin(EntityType.LIGHTNING, EntityType.ENEMY, (lightning, enemy)->{
+        onCollisionBegin(EntityType.LIGHTNING, EntityType.ENEMY, (lightning, enemy) -> {
             var hp = enemy.getComponent(HealthIntComponent.class);
-            if(hp.getValue() > 1){
-                hp.damage(hp.getValue()/2);
+            if (hp.getValue() > 1) {
+                hp.damage(hp.getValue() / 2);
                 FXGL.spawn("explosion", new SpawnData(enemy.getX(), enemy.getY()));
                 FXGL.play("enemy_boom.wav");
                 FXGL.getGameScene().getViewport().shake(SHAKE_POWER, 0.01);
-            }else {
+            } else {
                 enemy.removeFromWorld();
                 enemiesDefeated++;
                 enemyCount--;
@@ -415,14 +467,14 @@ public class InitSettings extends GameApplication {
             }
 
         });
-        onCollisionBegin(EntityType.ROCKET, EntityType.ENEMY, (rocket, enemy)->{
+        onCollisionBegin(EntityType.ROCKET, EntityType.ENEMY, (rocket, enemy) -> {
             var hp = enemy.getComponent(HealthIntComponent.class);
-            if(hp.getValue() > 1){
+            if (hp.getValue() > 1) {
                 hp.damage(100);
                 rocket.removeFromWorld();
                 FXGL.spawn("explosion", new SpawnData(enemy.getX(), enemy.getY()));
                 FXGL.play("enemy_hit.wav");
-            }else {
+            } else {
                 enemy.removeFromWorld();
                 enemiesDefeated++;
                 enemyCount--;
@@ -443,12 +495,12 @@ public class InitSettings extends GameApplication {
             if (hp.getValue() > 1) {
                 bomb.removeFromWorld();
                 hp.damage(100);
-                if(!hitsoundEnabled){
+                if (!hitsoundEnabled) {
                     FXGL.play("enemy_hit.wav");
                     hitsoundEnabled = true;
                     FXGL.runOnce(() -> hitsoundEnabled = false, Duration.seconds(0.05));
                 }
-                FXGL.spawn("light_explosion", new SpawnData(enemy.getX()+30+FXGL.random(-10,20), enemy.getY()+20+FXGL.random(10,20)));
+                FXGL.spawn("light_explosion", new SpawnData(enemy.getX() + 30 + FXGL.random(-10, 20), enemy.getY() + 20 + FXGL.random(10, 20)));
             } else {
                 FXGL.play("enemy_boom.wav");
                 FXGL.getGameScene().getViewport().shake(SHAKE_POWER, 0.01);
@@ -463,15 +515,15 @@ public class InitSettings extends GameApplication {
                 FXGL.inc("score", +100);
                 isEnemySpawned = false;
 
-                if(randomHealth.get() == 2 && randomCoin.get() != 1) {
+                if (randomHealth.get() == 2 && randomCoin.get() != 1) {
                     FXGL.spawn("health_bonus", new SpawnData(enemy.getX(), enemy.getY()));
                     isHealthSpawned = true;
                 }
-                if(randomCoin.get() == 1 && randomHealth.get() != 2) {
+                if (randomCoin.get() == 1 && randomHealth.get() != 2) {
                     FXGL.spawn("coin_bonus", new SpawnData(enemy.getX(), enemy.getY()));
                     isCoinSpawned = true;
                 }
-                if(randomPowerUp.get() == 3) {
+                if (randomPowerUp.get() == 3) {
 
                     FXGL.spawn("powerup", new SpawnData(enemy.getX(), enemy.getY()));
                     isPowerupSpawned = true;
@@ -480,11 +532,11 @@ public class InitSettings extends GameApplication {
         });
 
         onCollisionBegin(EntityType.POWERUP, EntityType.PLAYER, (powerup, player) -> {
-            if(!godmode) {
+            if (!godmode) {
                 InitSettings.powerup++;
-                if(InitSettings.powerup%3 == 0 && InitSettings.powerup != 0) {
+                if (InitSettings.powerup % 3 == 0 && InitSettings.powerup != 0) {
                     FXGL.play("bonus2.wav");
-                    if(powerupCounter < 10){
+                    if (powerupCounter < 10) {
                         powerupCounter++;
                         InitSettings.powerup = 0;
                         System.out.println(powerupCounter);
@@ -493,7 +545,7 @@ public class InitSettings extends GameApplication {
                 powerup.removeFromWorld();
                 isPowerupSpawned = false;
                 FXGL.play("bonus.wav");
-                }
+            }
 
         });
 
@@ -518,7 +570,7 @@ public class InitSettings extends GameApplication {
             return Unit.INSTANCE;
         });
         onKeyDown(KeyCode.SPACE, () -> {
-            if(!spacebarPressed){
+            if (!spacebarPressed) {
                 spacebarPressed = true;
                 player.getComponent(PlayerComponent.class).shoot();
             }
@@ -539,7 +591,7 @@ public class InitSettings extends GameApplication {
         });
     }
 
-    private void checkPowerup(){
+    private void checkPowerup() {
 
     }
 
@@ -551,9 +603,12 @@ public class InitSettings extends GameApplication {
     }
 
 
-
     @Override
     protected void initGame() {
+
+        run(this::checkWaveChange, Duration.seconds(1));
+
+
 
         addBackground();
         Random random = new Random();
@@ -585,45 +640,40 @@ public class InitSettings extends GameApplication {
         FXGL.getGameWorld().addEntityFactory(new FighterBullet());
         FXGL.getGameWorld().addEntityFactory(new Faker());
         FXGL.getGameWorld().addEntityFactory(new FakerBullet());
-
-
-        backgroundMusic = FXGL.getAssetLoader().loadMusic("TerminatorBattle.wav");
-        backgroundMusic.getAudio().setVolume(0.06);
-//        backgroundMusic.getAudio().play();
-
         player = FXGL.spawn("player", (double) FXGL.getAppWidth() / 2 - 45, 500);
-
 
         FXGL.getGameTimer().runOnceAfter(() -> {
             FXGL.getDialogService().showMessageBox("Wave " + wave + " Started!");
 
             FXGL.play("dialog.wav");
-            }, Duration.seconds(0.5));
+        }, Duration.seconds(0.5));
 
         run(() -> {
 
-            if(wave != 10){
-                maxPlayers = FXGL.random(5,7);
+            if (wave != 10) {
+                maxPlayers = FXGL.random(5, 7);
                 if (enemiesDefeated < enemiesToDestroy) {
                     if (enemyCount < maxPlayers && enemiesDefeated - enemyCount < maxPlayers) {
                         String picker = picker();
-                        Entity enemy = FXGL.getGameWorld().create(picker, new SpawnData(FXGL.random(0, FXGL.getAppWidth()-20), 100).put("angle", 0));
+                        Entity enemy = FXGL.getGameWorld().create(picker, new SpawnData(FXGL.random(0, FXGL.getAppWidth() - 20), 100).put("angle", 0));
                         spawnWithScale(enemy, Duration.seconds(0)).angleProperty().set(0);
                         enemyCount++;
                         bulletSpawner.addEnemy(enemy, picker);
                         isEnemySpawned = true;
                         enemyType = picker();
                         bonus = BonusSpawner.bonusSpawner(enemyType);
+
                     }
                 } else {
-                    if ((FXGL.getGameWorld().getEntitiesByType(EntityType.COIN).isEmpty())&&FXGL.getGameWorld().getEntitiesByType(EntityType.HEALTH).isEmpty() &&
+                    if ((FXGL.getGameWorld().getEntitiesByType(EntityType.COIN).isEmpty()) && FXGL.getGameWorld().getEntitiesByType(EntityType.HEALTH).isEmpty() &&
                             FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY).isEmpty() && FXGL.getGameWorld().getEntitiesByType(EntityType.POWERUP).isEmpty() && FXGL.getGameWorld().getEntitiesByType(EntityType.BONUS).isEmpty()) {
                         FXGL.getGameTimer().runOnceAfter(() -> FXGL.getDialogService().showMessageBox("Wave " + (wave - 1) + " Completed!"), Duration.seconds(0));
-                        try{
+                        try {
                             FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY, EntityType.ENEMY_BULLET).forEach(Entity::removeFromWorld);
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             System.out.println("No enemies left");
                         }
+
                         addBackground();
                         enemiesDefeated = 0;
                         enemyCount = 0;
@@ -631,7 +681,7 @@ public class InitSettings extends GameApplication {
                         wave++;
                     }
                 }
-            }else{
+            } else {
                 enemiesToDestroy = 1;
                 maxPlayers = 1;
                 if (enemiesDefeated < enemiesToDestroy) {
@@ -646,27 +696,34 @@ public class InitSettings extends GameApplication {
                         bonus = BonusSpawner.bonusSpawner(enemyType);
                     }
                 } else {
-                    if ((FXGL.getGameWorld().getEntitiesByType(EntityType.COIN).isEmpty())&&FXGL.getGameWorld().getEntitiesByType(EntityType.HEALTH).isEmpty() &&
+                    if ((FXGL.getGameWorld().getEntitiesByType(EntityType.COIN).isEmpty()) && FXGL.getGameWorld().getEntitiesByType(EntityType.HEALTH).isEmpty() &&
                             FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY).isEmpty() && FXGL.getGameWorld().getEntitiesByType(EntityType.POWERUP).isEmpty()) {
                         FXGL.getGameTimer().runOnceAfter(() -> FXGL.getDialogService().showMessageBox("Wave " + (wave - 1) + " Completed!"), Duration.seconds(0));
-                        try{
+                        try {
                             FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY, EntityType.ENEMY_BULLET).forEach(Entity::removeFromWorld);
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             System.out.println("No enemies left");
                         }
                         enemiesDefeated = 0;
                         enemyCount = 0;
-                        wave++;
                     }
                 }
             }
 
 
-
         }, Duration.seconds(1));
         run(bulletSpawner::spawnBulletsFromEnemies, Duration.seconds(3));
-        run(bulletSpawner::spawnBulletForBoss, Duration.seconds(1));
 
+        FXGL.run(()->{
+            run(bulletSpawner::spawnBulletForBoss, Duration.seconds(FXGL.random(0.5, 1)));
+        }, Duration.seconds(FXGL.random(1, 5)));
+
+
+
+    }
+
+    private void onWaveChange() {
+        playMusicForWave(wave);
     }
 
     private void initializeConsole() {
@@ -707,8 +764,8 @@ public class InitSettings extends GameApplication {
         var isPowerupSpawnedText = FXGL.getUIFactoryService().newText("", 15);
         var powerupText = FXGL.getUIFactoryService().newText("", 15);
 
-        overlay.getChildren().addAll( debugText, F1KEY, waveText, enemiesToDestroyText, enemiesDefeatedText, enemyCountText, godModeText
-        , isCoinSpawnedText, isHealthSpawnedText, isEnemySpawnedText, isPowerupSpawnedText, powerupText);
+        overlay.getChildren().addAll(debugText, F1KEY, waveText, enemiesToDestroyText, enemiesDefeatedText, enemyCountText, godModeText
+                , isCoinSpawnedText, isHealthSpawnedText, isEnemySpawnedText, isPowerupSpawnedText, powerupText);
         FXGL.addUINode(overlay, 10, 100);
 
         Timeline uiUpdater = new Timeline(
@@ -812,8 +869,6 @@ public class InitSettings extends GameApplication {
         FXGL.addUINode(healthBar, -75, 850);
 
 
-
-
         Image healthImage = new Image("/assets/textures/health.png");
         ImageView healthView = new ImageView(healthImage);
         healthView.setFitHeight(30);
@@ -838,10 +893,8 @@ public class InitSettings extends GameApplication {
         pulsateTimeline.setAutoReverse(true);
 
 
-
-
         FXGL.run(() -> {
-            if(healthBar.getCurrentValue() < (20 * 0.30)) {
+            if (healthBar.getCurrentValue() < (20 * 0.30)) {
                 healthBar.setFill(Color.RED);
                 if (pulsateTimeline.getStatus() != Animation.Status.RUNNING) {
                     pulsateTimeline.play();
@@ -849,10 +902,10 @@ public class InitSettings extends GameApplication {
                     Path heartbeat = Paths.get("src/main/resources/assets/sounds/HeartBeat.wav");
                     try {
                         URL url = heartbeat.toUri().toURL();
-                        Audio audio =audioPlayer.loadAudio(AudioType.SOUND, url, false);
+                        Audio audio = audioPlayer.loadAudio(AudioType.SOUND, url, false);
                         audio.setVolume(0.1);
                         audio.play();
-                        FXGL.runOnce(audio::stop,Duration.seconds(3));
+                        FXGL.runOnce(audio::stop, Duration.seconds(3));
                     } catch (MalformedURLException e) {
                         throw new RuntimeException(e);
                     }
@@ -883,16 +936,16 @@ public class InitSettings extends GameApplication {
 
         // Aktualizuj tekst FPS co klatkę
         FXGL.getGameTimer().runAtInterval(() -> {
-            double fps = 1/ FXGL.tpf();
+            double fps = 1 / tpf();
             fpsText.setText("FPS: " + fps);
         }, Duration.seconds(0.1));
 
     }
 
 
-
     public void toggleEveryEnemyHas1HP() {
     }
+
     private void addBackground() {
         String backgroundPath1 = "assets/textures/background.jpg";
         String backgroundPath2 = "assets/textures/background2.jpg";
@@ -900,20 +953,27 @@ public class InitSettings extends GameApplication {
         String backgroundPath4 = "assets/textures/background4.jpg";
         String backgroundPath5 = "assets/textures/background5.jpg";
         URL backgroundUrl = null;
-        switch (wave){
-            case 1: backgroundUrl = ResourceLoader.getResource(backgroundPath1); break;
+        switch (wave) {
+            case 1:
+                backgroundUrl = ResourceLoader.getResource(backgroundPath1);
+                break;
             case 2:
             case 3:
-                backgroundUrl = ResourceLoader.getResource(backgroundPath2); break;
+                backgroundUrl = ResourceLoader.getResource(backgroundPath2);
+                break;
             case 4:
             case 5:
             case 6:
-                backgroundUrl = ResourceLoader.getResource(backgroundPath3); break;
+                backgroundUrl = ResourceLoader.getResource(backgroundPath3);
+                break;
             case 7:
             case 8:
             case 9:
-                backgroundUrl = ResourceLoader.getResource(backgroundPath4); break;
-            case 10: backgroundUrl = ResourceLoader.getResource(backgroundPath5); break;
+                backgroundUrl = ResourceLoader.getResource(backgroundPath4);
+                break;
+            case 10:
+                backgroundUrl = ResourceLoader.getResource(backgroundPath5);
+                break;
         }
 
         if (backgroundUrl == null) {
@@ -927,9 +987,5 @@ public class InitSettings extends GameApplication {
         background.setTranslateY(-margin);
         FXGL.getGameScene().addGameView(new GameView(background, Integer.MIN_VALUE));
     }
-
-
-
-
 }
 

@@ -2,6 +2,8 @@ package org.example.MainMenu;
 
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
+import com.almasb.fxgl.audio.AudioPlayer;
+import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.dsl.FXGL;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.Alert;
@@ -12,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import javafx.scene.text.Text;
+import org.example.Init.InitSettings;
 import org.example.Score.HighScoreManager;
 import javafx.scene.text.Font;
 
@@ -21,9 +24,11 @@ import java.util.List;
 
 public class MainMenu extends FXGLMenu {
     private final HighScoreManager highScoreManager = new HighScoreManager();
+    public static Music music;
 
     public MainMenu() throws IOException, FontFormatException {
         super(MenuType.MAIN_MENU);
+        playBackgroundMusic();
         double appWidth = 1920;
         double appHeight = 1080;
         var bgImage = new Image("assets/textures/background4.jpg");
@@ -43,8 +48,12 @@ public class MainMenu extends FXGLMenu {
         getContentRoot().getChildren().addAll(startButton, highScoresButton, exitButton);
     }
 
-
-
+    private void playBackgroundMusic() {
+        music = FXGL.getAssetLoader().loadMusic("CosmicConquest.mp3");
+        music.getAudio().setVolume(0.6);
+        AudioPlayer audioPlayer = FXGL.getAudioPlayer();
+        audioPlayer.loopMusic(music);
+    }
     private void showHighScores() {
         List<String> highScores = highScoreManager.readHighScores();
         StringBuilder scoresText = new StringBuilder("High Scores:\n");
@@ -70,7 +79,9 @@ public class MainMenu extends FXGLMenu {
                     Bindings.when(hoverProperty()).then(Color.BLACK).otherwise(Color.WHITE)
             );
             setOnMouseClicked(e -> {
+                InitSettings.spacebarPressed = false;
                 action.run();
+                music.getAudio().stop();
                 FXGL.play("menu_click.wav");
 
             });

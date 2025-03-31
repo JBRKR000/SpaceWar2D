@@ -176,7 +176,7 @@ public class BulletSpawner {
             FXGL.getGameTimer().runOnceAfter(() -> {
                 String type = enemies.get(enemy);
                 if (type != null && type.equals("boss_1")) {
-                    int random = FXGL.random(1, 4);
+                    int random = FXGL.random(1, 6);
                     if (FXGL.getGameWorld().getEntities().contains(enemy)) {
                         switch (random) {
                             case 1:
@@ -186,9 +186,23 @@ public class BulletSpawner {
                                 bullet.setScaleY(1.1);
                                 FXGL.getGameWorld().addEntity(bullet);
                                 break;
+                            case 5:
+                                Entity bullet5= FXGL.getGameWorld().create("faker_bullet", new SpawnData(enemy.getX() + 75, enemy.getY() + 120).put("angle", 0));
+                                FXGL.play("faker_bullet.wav");
+                                bullet5.setScaleX(1.1);
+                                bullet5.setScaleY(1.1);
+                                FXGL.getGameWorld().addEntity(bullet5);
+                                break;
+                            case 6:
+                                Entity bullet6= FXGL.getGameWorld().create("fighter_bullet", new SpawnData(enemy.getX() + 75, enemy.getY() + 120).put("angle", 0));
+                                FXGL.play("fighter.wav");
+                                bullet6.setScaleX(1.1);
+                                bullet6.setScaleY(1.1);
+                                FXGL.getGameWorld().addEntity(bullet6);
+                                break;
                             case 2:
                                 Entity bullet2 = FXGL.getGameWorld().create("striker_bullet", new SpawnData(enemy.getX() + 75, enemy.getY() + 120).put("angle", 0));
-                                FXGL.play("STRIKER.wav");
+                                FXGL.play("s00.wav");
                                 bullet2.setScaleX(1.1);
                                 bullet2.setScaleY(1.1);
                                 FXGL.getGameWorld().addEntity(bullet2);
@@ -217,7 +231,7 @@ public class BulletSpawner {
                                 double targetX = player.getX();
                                 double targetY = player.getY();
                                 Entity bullet4 = FXGL.getGameWorld().create("inferno_bullet", new SpawnData(enemy.getX() + 75, enemy.getY() + 120).put("angle", 0).put("p_x", targetX).put("p_x", targetY));
-                                FXGL.play("INFERNO.wav");
+                                FXGL.play("s19.wav");
                                 bullet4.setScaleX(1.1);
                                 bullet4.setScaleY(1.1);
                                 FXGL.getGameWorld().addEntity(bullet4);
@@ -227,13 +241,7 @@ public class BulletSpawner {
 
                     }
                 }
-
-
-
-
-
-
-            }, Duration.seconds(FXGL.random(0.1, 1)));
+            }, Duration.seconds(FXGL.random(0.5, 1)));
         }
 
     }

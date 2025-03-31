@@ -25,7 +25,7 @@ public class Boss implements EntityFactory {
     private AnimationChannel move;
 
     public Boss(){
-        move = new AnimationChannel(FXGL.image("boss1.png"), 3,  829/3, 900/3, Duration.seconds(2), 0, 8);
+        move = new AnimationChannel(FXGL.image("boss2.png"), 3,  900/3, 496/2, Duration.seconds(1), 0, 5);
     }
 
     int MAX_HP = 10000;
@@ -41,7 +41,7 @@ public class Boss implements EntityFactory {
         texture.loopAnimationChannel(move); // Dodanie uruchomienia animacji
         Entity entity = entityBuilder(data)
                 .type(EntityType.ENEMY)
-                .bbox(new HitBox(BoundingShape.box((double) 829 /3, (double) 900 /3)))
+                .bbox(new HitBox(BoundingShape.box((double) 900 /3, (double) 496 /3)))
                 .view(hpView)
                 .with(hp)
                 .with(new RandomMoveComponent(new Rectangle2D(0, 0, getAppWidth(), ((double) getAppHeight() /2)), 35))
@@ -53,13 +53,18 @@ public class Boss implements EntityFactory {
         FXGL.run(()->{
             try{
                 if(entity.hasComponent(RandomMoveComponent.class)){
-                    int randomspeed = FXGL.random(0,150);
-                    entity.getComponent(RandomMoveComponent.class).setMoveSpeed(randomspeed);
+                    if(FXGL.random(0,2) == 0){
+                        int randomspeed = FXGL.random(0,150);
+                        entity.getComponent(RandomMoveComponent.class).setMoveSpeed(randomspeed);
+                    }else{
+                        entity.setPosition(FXGL.random(250, FXGL.getAppWidth() - 250), FXGL.random(0, FXGL.getAppHeight()/ 2));
+                    }
+
                 }
             }catch (Exception e){
                 //IGNORE
             }
-        }, Duration.seconds(5));
+        }, Duration.seconds(1));
 
         return entity;
     }

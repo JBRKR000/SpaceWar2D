@@ -714,9 +714,8 @@ public class InitSettings extends GameApplication {
         }, Duration.seconds(1));
         run(bulletSpawner::spawnBulletsFromEnemies, Duration.seconds(3));
 
-        FXGL.run(()->{
-            run(bulletSpawner::spawnBulletForBoss, Duration.seconds(FXGL.random(0.5, 1)));
-        }, Duration.seconds(FXGL.random(1, 5)));
+
+        run(bulletSpawner::spawnBulletForBoss, Duration.seconds(FXGL.random(0.005, 1)));
 
 
 

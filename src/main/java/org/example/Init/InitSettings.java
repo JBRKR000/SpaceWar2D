@@ -83,7 +83,7 @@ public class InitSettings extends GameApplication {
     public int bonus;
     public static boolean spacebarPressed = false;
     public static Integer powerup = 0;
-    public static Integer powerupCounter = 1;
+    public static Integer powerupCounter = 10;
     private static boolean hitsoundEnabled = false;
     private final HighScoreManager highScoreManager = new HighScoreManager();
     private static final int SHAKE_POWER = 5;
@@ -100,7 +100,19 @@ public class InitSettings extends GameApplication {
             previousWave = wave;
         }
     }
-
+    private void endGameStateWithVictory() {
+        int finalScore = FXGL.geti("score");
+        currentMusic.getAudio().stop();
+        String message = "Congratulations!\n" +
+                "You have completed the game!\n" +
+                "Your score: " + finalScore + "\n" +
+                "Enter your name to save high score";
+        FXGL.play("victory_music.wav");
+        FXGL.getDialogService().showInputBox(message, playerName -> {
+            highScoreManager.writeHighScore(playerName, finalScore);
+            FXGL.getGameController().gotoMainMenu();
+        });
+    }
     private void endGameState() {
         int finalScore = FXGL.geti("score");
         currentMusic.getAudio().stop();
@@ -265,6 +277,15 @@ public class InitSettings extends GameApplication {
             var hp = enemy.getComponent(HealthIntComponent.class);
 
             if (hp.getValue() > 1) {
+
+                if(wave == 10){
+                   float random =  FXGL.random(0,1000);
+                    if(random > 350 && random < 375){
+                        FXGL.spawn("health_bonus", new SpawnData(enemy.getX(), enemy.getY()));
+                        isHealthSpawned = true;
+                    }
+                }
+
                 bullet.removeFromWorld();
                 switch (powerupCounter) {
                     case 1:
@@ -377,11 +398,6 @@ public class InitSettings extends GameApplication {
                         playerComponent.setMovementSpeed(2);
                         FXGL.runOnce(() -> playerComponent.setMovementSpeed(10), Duration.seconds(3));
                         FXGL.play("slow.wav");
-                        FXGL.runOnce(() -> {
-                            FXGL.play("rev_slow.wav");
-                        }, Duration.seconds(3));
-
-
                     } else {
                         FXGL.play("player_explodes.wav");
                         player.removeFromWorld();
@@ -682,8 +698,8 @@ public class InitSettings extends GameApplication {
                     }
                 }
             } else {
-                enemiesToDestroy = 1;
-                maxPlayers = 1;
+                enemiesToDestroy = 2;
+                maxPlayers = 2;
                 if (enemiesDefeated < enemiesToDestroy) {
                     if (enemyCount < maxPlayers && enemiesDefeated - enemyCount < maxPlayers) {
                         String picker = picker();
@@ -706,6 +722,7 @@ public class InitSettings extends GameApplication {
                         }
                         enemiesDefeated = 0;
                         enemyCount = 0;
+                        endGameStateWithVictory();
                     }
                 }
             }
@@ -744,50 +761,6 @@ public class InitSettings extends GameApplication {
 
     @Override
     protected void initUI() {
-        initializeConsole();
-        // ------------ DEBUG UI ------------
-        // TODO: remove this in production!
-        VBox overlay = new VBox(5);
-        overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5); -fx-padding: 10;");
-
-        var debugText = FXGL.getUIFactoryService().newText("DEBUG", 15);
-        var F1KEY = FXGL.getUIFactoryService().newText("Press F1 to toggle Console", 15);
-        var waveText = FXGL.getUIFactoryService().newText("", 15);
-        var enemiesToDestroyText = FXGL.getUIFactoryService().newText("", 15);
-        var enemiesDefeatedText = FXGL.getUIFactoryService().newText("", 15);
-        var enemyCountText = FXGL.getUIFactoryService().newText("", 15);
-        var godModeText = FXGL.getUIFactoryService().newText("", 15);
-        var isCoinSpawnedText = FXGL.getUIFactoryService().newText("", 15);
-        var isHealthSpawnedText = FXGL.getUIFactoryService().newText("", 15);
-        var isEnemySpawnedText = FXGL.getUIFactoryService().newText("", 15);
-        var isPowerupSpawnedText = FXGL.getUIFactoryService().newText("", 15);
-        var powerupText = FXGL.getUIFactoryService().newText("", 15);
-
-        overlay.getChildren().addAll(debugText, F1KEY, waveText, enemiesToDestroyText, enemiesDefeatedText, enemyCountText, godModeText
-                , isCoinSpawnedText, isHealthSpawnedText, isEnemySpawnedText, isPowerupSpawnedText, powerupText);
-        FXGL.addUINode(overlay, 10, 100);
-
-        Timeline uiUpdater = new Timeline(
-                new KeyFrame(Duration.seconds(0.1), event -> {
-                    debugText.setText("--- DEBUG MODE ---");
-                    waveText.setText("Wave: " + InitSettings.wave);
-                    enemiesToDestroyText.setText("Enemies to Destroy: " + InitSettings.enemiesToDestroy);
-                    enemiesDefeatedText.setText("Enemies Defeated: " + InitSettings.enemiesDefeated);
-                    enemyCountText.setText("Enemy Count: " + InitSettings.enemyCount);
-                    godModeText.setText("God Mode: " + (godmode ? "enabled" : "disabled"));
-                    isCoinSpawnedText.setText("Coin Spawned: " + (isCoinSpawned ? "yes" : "no"));
-                    isHealthSpawnedText.setText("Health Spawned: " + (isHealthSpawned ? "yes" : "no"));
-                    isEnemySpawnedText.setText("Enemy Spawned: " + (isEnemySpawned ? "yes" : "no"));
-                    isPowerupSpawnedText.setText("Powerup Spawned: " + (isPowerupSpawned ? "yes" : "no"));
-                    powerupText.setText("Powerup: " + powerup);
-                })
-        );
-        uiUpdater.setCycleCount(Animation.INDEFINITE);
-        uiUpdater.play();
-        // TODO: remove this in production!
-        // ------------ DEBUG UI ------------
-
-
         var text = FXGL.getUIFactoryService().newText("", 15);
         text.textProperty().bind(FXGL.getip("score").asString("Score: %d"));
         FXGL.getWorldProperties().addListener("score", (prev, now) -> {
@@ -819,7 +792,6 @@ public class InitSettings extends GameApplication {
         FXGL.addUINode(wavetext, 1801, 70);
 
 
-        // PowerUp bar
         ProgressBar powerUpLoad = new ProgressBar(false);
         powerUpLoad.setWidth(200);
         powerUpLoad.setHeight(10);

@@ -241,7 +241,7 @@ public class BulletSpawner {
 
                     }
                 }
-            }, Duration.seconds(FXGL.random(0.5, 1)));
+            }, Duration.seconds(FXGL.random(1, 2)));
         }
 
     }

@@ -1,9 +1,0 @@
-player1:1100
-player2:1200
-player3:1300
-player4:1400
-player5:1500
-fxasd:415
-Kubus:809
-Siema:400
-kuba:4558

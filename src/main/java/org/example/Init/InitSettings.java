@@ -29,6 +29,7 @@ import kotlin.Unit;
 import org.example.Bonus.*;
 import org.example.Bullet.*;
 import org.example.Debug.Console;
+import org.example.Effects.EndGameScene;
 import org.example.Effects.Explosion;
 import org.example.Enemy.*;
 import org.example.Enemy.Void;
@@ -88,9 +89,11 @@ public class InitSettings extends GameApplication {
     private final HighScoreManager highScoreManager = new HighScoreManager();
     private static final int SHAKE_POWER = 5;
     private static double VOLUME = 0.20;
-    private static Music currentMusic;
+    public static Music currentMusic;
     private static List<String> waves_musicList;
     private int previousWave = 0;
+    public static Music endgameMusic;
+
 
 
 
@@ -101,16 +104,16 @@ public class InitSettings extends GameApplication {
         }
     }
     private void endGameStateWithVictory() {
+        endgameMusic = FXGL.getAssetLoader().loadMusic("victory_music.wav");
         int finalScore = FXGL.geti("score");
         currentMusic.getAudio().stop();
-        String message = "Congratulations!\n" +
-                "You have completed the game!\n" +
-                "Your score: " + finalScore + "\n" +
-                "Enter your name to save high score";
-        FXGL.play("victory_music.wav");
-        FXGL.getDialogService().showInputBox(message, playerName -> {
+        endgameMusic.getAudio().stop();
+        endgameMusic.getAudio().setVolume(0.5);
+        endgameMusic.getAudio().setLooping(true);
+        endgameMusic.getAudio().play();
+        FXGL.getSceneService().pushSubScene(new EndGameScene(finalScore));
+        FXGL.getDialogService().showInputBox("Gratulacje! Wpisz swój nick", playerName -> {
             highScoreManager.writeHighScore(playerName, finalScore);
-            FXGL.getGameController().gotoMainMenu();
         });
     }
     private void endGameState() {

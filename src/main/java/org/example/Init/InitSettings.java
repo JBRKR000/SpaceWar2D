@@ -70,7 +70,7 @@ public class InitSettings extends GameApplication {
     public static boolean isDebugEnabled = false;
     private Entity player;
     private static boolean godmode = false;
-    public static int wave = 10;  // Current wave
+    public static int wave = 1;  // Current wave
     public static int enemiesToDestroy = 10;  // Enemies to defeat per wave (adjustable)
     public static int enemiesDefeated = 0;
     public static int enemyCount = 0;
@@ -659,6 +659,8 @@ public class InitSettings extends GameApplication {
         FXGL.getGameWorld().addEntityFactory(new FighterBullet());
         FXGL.getGameWorld().addEntityFactory(new Faker());
         FXGL.getGameWorld().addEntityFactory(new FakerBullet());
+        FXGL.getGameWorld().addEntityFactory(new Beta());
+        FXGL.getGameWorld().addEntityFactory(new BetaBullet());
         player = FXGL.spawn("player", (double) FXGL.getAppWidth() / 2 - 45, 500);
 
         FXGL.getGameTimer().runOnceAfter(() -> {

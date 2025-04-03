@@ -6,9 +6,12 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.time.LocalTimer;
 import com.sun.jdi.Method;
+import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.util.Duration;
 import org.example.Enemy.Inferno;
+import org.example.GunUpdates.SpiralBetaClockWise;
+import org.example.GunUpdates.SpiralBetaCounterClockWise;
 import org.example.Other.EntityType;
 
 import java.util.*;
@@ -39,6 +42,42 @@ public class BulletSpawner {
     public void spawnBulletsFromEnemies() {
         for (Entity enemy : enemies.keySet()) {
             double delay = FXGL.random(0.5, 3);
+            FXGL.getGameTimer().runOnceAfter(()->{
+                String type = enemies.get(enemy);
+                if (type != null && type.equals("beta")) {
+                    if (enemy.hasComponent(RandomMoveComponent.class)) {
+                        RandomMoveComponent moveComponent = enemy.getComponent(RandomMoveComponent.class);
+                        if (moveComponent.getMoveSpeed() == 0) {
+                            FXGL.run(() -> {
+                                if (moveComponent.getMoveSpeed() == 0) {
+                                    SpawnData spawnData = new SpawnData(enemy.getX(), enemy.getY() + 40);
+                                    SpawnData spawnData2 = new SpawnData(enemy.getX(), enemy.getY() + 40);
+
+                                    spawnData.put("startPosition", new Point2D(enemy.getX(), enemy.getY() + 10));
+                                    spawnData2.put("startPosition", new Point2D(enemy.getX()-100, enemy.getY() + 10));
+
+                                    Entity bulletClockwise = FXGL.getGameWorld().create("betaBullet", spawnData2);
+                                    bulletClockwise.addComponent(new SpiralBetaClockWise(enemy.getX(), enemy.getY()));
+
+                                    Entity bulletCounterClockwise = FXGL.getGameWorld().create("betaBullet", spawnData);
+                                    bulletCounterClockwise.addComponent(new SpiralBetaCounterClockWise(enemy.getX()-200, enemy.getY()));
+
+                                    FXGL.play("beta.wav");
+                                    bulletClockwise.setScaleX(1.1);
+                                    bulletClockwise.setScaleY(1.1);
+                                    bulletCounterClockwise.setScaleX(1.1);
+                                    bulletCounterClockwise.setScaleY(1.1);
+
+                                    FXGL.getGameWorld().addEntity(bulletClockwise);
+                                    FXGL.getGameWorld().addEntity(bulletCounterClockwise);
+                                }
+                            }, Duration.seconds(0.1), 10);
+                        }
+                    }
+                }
+            },Duration.seconds(FXGL.random(0,1)));
+
+
             FXGL.getGameTimer().runOnceAfter(() -> {
                 String type = enemies.get(enemy);
                 if (type != null && type.equals("inferno")) {
@@ -79,6 +118,8 @@ public class BulletSpawner {
                     FXGL.getGameWorld().addEntity(bullet);
 
                 }
+
+
 
                 if (type != null && type.equals("void")) {
                     if (FXGL.getGameWorld().getEntities().contains(enemy)) {

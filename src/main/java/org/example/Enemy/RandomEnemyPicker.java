@@ -16,8 +16,8 @@ public class RandomEnemyPicker {
         if(wave <= 3){
             enemiesToDestroy = 8;
             List<String> enemyList1to3 = new ArrayList<>();
-            enemyList1to3.add("inferno");
-            enemyList1to3.add("striker");
+//            enemyList1to3.add("inferno");
+//            enemyList1to3.add("striker");
             enemyList1to3.add("beta");
             pick =  enemyList1to3.get(random.nextInt(enemyList1to3.size()));
         }

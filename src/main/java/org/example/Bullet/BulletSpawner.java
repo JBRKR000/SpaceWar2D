@@ -50,17 +50,15 @@ public class BulletSpawner {
                         if (moveComponent.getMoveSpeed() == 0) {
                             FXGL.run(() -> {
                                 if (moveComponent.getMoveSpeed() == 0) {
-                                    SpawnData spawnData = new SpawnData(enemy.getX(), enemy.getY() + 40);
-                                    SpawnData spawnData2 = new SpawnData(enemy.getX(), enemy.getY() + 40);
 
-                                    spawnData.put("startPosition", new Point2D(enemy.getX(), enemy.getY() + 10));
-                                    spawnData2.put("startPosition", new Point2D(enemy.getX()-100, enemy.getY() + 10));
-
+                                    SpawnData spawnData2 = new SpawnData(enemy.getX(), enemy.getY());
+                                    spawnData2.put("startPosition", new Point2D(enemy.getX(), enemy.getY()));
                                     Entity bulletClockwise = FXGL.getGameWorld().create("betaBullet", spawnData2);
-                                    bulletClockwise.addComponent(new SpiralBetaClockWise(enemy.getX(), enemy.getY()));
 
-                                    Entity bulletCounterClockwise = FXGL.getGameWorld().create("betaBullet", spawnData);
-                                    bulletCounterClockwise.addComponent(new SpiralBetaCounterClockWise(enemy.getX()-200, enemy.getY()));
+
+                                    SpawnData spawnData = new SpawnData(enemy.getX(), enemy.getY());
+                                    spawnData.put("startPosition", new Point2D(enemy.getX(), enemy.getY()));
+                                    Entity bulletCounterClockwise = FXGL.getGameWorld().create("betaBullet2", spawnData);
 
                                     FXGL.play("beta.wav");
                                     bulletClockwise.setScaleX(1.1);
@@ -69,7 +67,7 @@ public class BulletSpawner {
                                     bulletCounterClockwise.setScaleY(1.1);
 
                                     FXGL.getGameWorld().addEntity(bulletClockwise);
-                                    FXGL.getGameWorld().addEntity(bulletCounterClockwise);
+                                      FXGL.getGameWorld().addEntity(bulletCounterClockwise);
                                 }
                             }, Duration.seconds(0.1), 10);
                         }

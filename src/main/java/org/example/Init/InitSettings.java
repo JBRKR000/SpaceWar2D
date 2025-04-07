@@ -93,6 +93,7 @@ public class InitSettings extends GameApplication {
     private static List<String> waves_musicList;
     private int previousWave = 0;
     public static Music endgameMusic;
+    private boolean isimmune = false;
 
 
 
@@ -366,7 +367,7 @@ public class InitSettings extends GameApplication {
         });
 
         onCollisionBegin(EntityType.ENEMY_BULLET, EntityType.PLAYER, (bullet, player) -> {
-            if (!godmode) {
+            if (!godmode && !isimmune) {
                 try {
                     var hp = player.getComponent(HealthIntComponent.class);
                     hp_ = hp.getValue();
@@ -374,6 +375,11 @@ public class InitSettings extends GameApplication {
                         bullet.removeFromWorld();
                         hp.damage(1);
                         FXGL.play("userhit.wav");
+                        FXGL.getGameScene().getViewport().shake(SHAKE_POWER, 0.01);
+
+                        isimmune = true;
+                        blinkPlayer(player);
+                        FXGL.runOnce(() -> isimmune = false, Duration.seconds(2));
                     } else {
                         FXGL.play("player_explodes.wav");
                         player.removeFromWorld();
@@ -388,7 +394,7 @@ public class InitSettings extends GameApplication {
             }
         });
         onCollisionBegin(EntityType.FAKER_BULLET, EntityType.PLAYER, (faker_bullet, player) -> {
-            if (!godmode) {
+            if (!godmode && !isimmune) {
                 try {
                     var hp = player.getComponent(HealthIntComponent.class);
                     hp_ = hp.getValue();
@@ -396,7 +402,9 @@ public class InitSettings extends GameApplication {
                         faker_bullet.removeFromWorld();
                         hp.damage(1);
                         FXGL.play("userhit.wav");
-
+                        isimmune = true;
+                        blinkPlayer(player);
+                        FXGL.runOnce(() -> isimmune = false, Duration.seconds(2));
                         var playerComponent = player.getComponent(PlayerComponent.class);
                         playerComponent.setMovementSpeed(2);
                         FXGL.runOnce(() -> playerComponent.setMovementSpeed(10), Duration.seconds(3));
@@ -661,6 +669,8 @@ public class InitSettings extends GameApplication {
         FXGL.getGameWorld().addEntityFactory(new FakerBullet());
         FXGL.getGameWorld().addEntityFactory(new Beta());
         FXGL.getGameWorld().addEntityFactory(new BetaBullet());
+        FXGL.getGameWorld().addEntityFactory(new Bull());
+        FXGL.getGameWorld().addEntityFactory(new BullBullet());
         player = FXGL.spawn("player", (double) FXGL.getAppWidth() / 2 - 45, 500);
 
         FXGL.getGameTimer().runOnceAfter(() -> {
@@ -962,6 +972,15 @@ public class InitSettings extends GameApplication {
         background.setTranslateX(-margin);
         background.setTranslateY(-margin);
         FXGL.getGameScene().addGameView(new GameView(background, Integer.MIN_VALUE));
+    }
+    private void blinkPlayer(Entity player) {
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.seconds(0.1), new KeyValue(player.opacityProperty(), 0)),
+                new KeyFrame(Duration.seconds(0.2), new KeyValue(player.opacityProperty(), 1))
+        );
+        timeline.setCycleCount(10);
+        timeline.setAutoReverse(true);
+        timeline.play();
     }
 }
 

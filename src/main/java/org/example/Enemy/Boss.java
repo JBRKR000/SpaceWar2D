@@ -28,7 +28,7 @@ public class Boss implements EntityFactory {
         move = new AnimationChannel(FXGL.image("boss2.png"), 3,  900/3, 496/2, Duration.seconds(1), 0, 5);
     }
 
-    int MAX_HP = 1;
+    int MAX_HP = 5000;
     @Spawns("boss_1")
     public Entity boss_1(SpawnData data) {
         var hp = new HealthIntComponent(MAX_HP);

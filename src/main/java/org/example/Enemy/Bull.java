@@ -13,63 +13,77 @@ import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
 import com.almasb.fxgl.ui.ProgressBar;
+import javafx.animation.FadeTransition;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 import org.example.Other.EntityType;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import static com.almasb.fxgl.dsl.FXGL.*;
 
-public class Beta implements EntityFactory {
+public class Bull implements EntityFactory {
 
     public static Point2D pos;
     private static final int MAX_HP = 450;
     private AnimationChannel move;
-    public boolean betaisMoving = true;
 
 
-    public Beta() {
-        Image enemy_moving = FXGL.image("beta.png");
-        move = new AnimationChannel(enemy_moving, 4, 480/4, 300/3, Duration.seconds(2), 0, 11);
+    public Bull() {
+        Image enemy_moving = FXGL.image("bull.png");
+        move = new AnimationChannel(enemy_moving, 4, 420/4, 120, Duration.seconds(1), 0, 3);
 
     }
 
-    @Spawns("beta")
+    @Spawns("bull")
     public Entity newEnemy(SpawnData data) {
         var hp = new HealthIntComponent(MAX_HP);
         var hpView = new ProgressBar(false);
         hpView.setMaxValue(MAX_HP);
-        hpView.setWidth(85);
-        hpView.setTranslateY(110);
-        hpView.setTranslateX(20);
+        hpView.setWidth(110);
+        hpView.setTranslateY(145);
+        hpView.setTranslateX(0);
         hpView.currentValueProperty().bind(hp.valueProperty());
         AnimatedTexture texture = new AnimatedTexture(move);
         Entity entity = entityBuilder(data)
                 .type(EntityType.ENEMY)
-                .bbox(new HitBox(BoundingShape.box((double) 480 /4, 100)))
-                .scale(0.5, 0.5)
+                .bbox(new HitBox(BoundingShape.box((double) 420 /4, 120)))
                 .view(hpView)
                 .with(hp)
                 .with(new RandomMoveComponent(new Rectangle2D(0, 0, getAppWidth(), ((double) getAppHeight() / 2)), 50))
                 .collidable()
                 .build();
         entity.getViewComponent().addChild(texture);
-        entity.addComponent(new Beta.EnemySetAngle(texture, move));
+        entity.addComponent(new Bull.EnemySetAngle(texture, move));
         texture.loopAnimationChannel(move);
         pos = new Point2D(entity.getX(), entity.getY());
 
         entity.setOnActive(()->{
+            FXGL.run(() -> {
+                if (FXGL.random(0, 4) == 2) {
+                    FadeTransition fadeTransition = new FadeTransition(Duration.seconds(1), entity.getViewComponent().getParent());
+                    fadeTransition.setFromValue(1.0);
+                    fadeTransition.setToValue(0.0);
+                    fadeTransition.setOnFinished(e -> {
+                        entity.setVisible(false);
+                        FXGL.runOnce(() -> {
+                            FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), entity.getViewComponent().getParent());
+                            fadeIn.setFromValue(0.0);
+                            fadeIn.setToValue(1.0);
+                            fadeIn.setOnFinished(ev -> entity.setVisible(true));
+                            fadeIn.play();
+                        }, Duration.seconds(5));
+                    });
+                    fadeTransition.play();
+                }
+            }, Duration.seconds(1));
+
 
             FXGL.run(()->{
                 if(entity.hasComponent(RandomMoveComponent.class)){
-                        if(FXGL.random(0,3) > 1){
-                            entity.getComponent(RandomMoveComponent.class).setMoveSpeed(0);
-                            betaisMoving = false;
-                        }else {
-                            entity.getComponent(RandomMoveComponent.class).setMoveSpeed(50);
-                            betaisMoving = true;
-                        }
+                    entity.getComponent(RandomMoveComponent.class).setMoveSpeed(FXGL.random(0,250));
                 }
             },Duration.seconds(1));
         });
@@ -85,6 +99,8 @@ public class Beta implements EntityFactory {
         public EnemySetAngle(AnimatedTexture texture, AnimationChannel move) {
             this.texture = texture;
             this.move = move;
+            texture.setScaleX(1.25);
+            texture.setScaleY(1.25);
         }
         @Override
         public void onUpdate(double tpf) {

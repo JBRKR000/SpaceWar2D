@@ -116,7 +116,22 @@ public class BulletSpawner {
                     FXGL.getGameWorld().addEntity(bullet);
 
                 }
+                if (type != null && type.equals("bull")) {
+                    if (!enemy.hasComponent(RandomMoveComponent.class)) {
+                        enemy.addComponent(new RandomMoveComponent(new Rectangle2D(0, 0, FXGL.getAppWidth(), FXGL.getAppHeight() / 2), 100));
+                    }
+                    RandomMoveComponent moveComponent = enemy.getComponent(RandomMoveComponent.class);
+                    Entity bullet1 = FXGL.getGameWorld().create("bull_bullet", new SpawnData(enemy.getX() + 25, enemy.getY() + 40).put("angle", 0));
+                    Entity bullet2 = FXGL.getGameWorld().create("bull_bullet", new SpawnData(enemy.getX() + 50, enemy.getY() + 40).put("angle", 0));
+                    Entity bullet3 = FXGL.getGameWorld().create("bull_bullet", new SpawnData(enemy.getX() + 75, enemy.getY() + 40).put("angle", 0));
+                    Entity bullet4 = FXGL.getGameWorld().create("bull_bullet", new SpawnData(enemy.getX(), enemy.getY() + 40).put("angle", 0));
+                    FXGL.play("bull_bullet.wav");
+                    FXGL.getGameWorld().addEntity(bullet1);
+                    FXGL.getGameWorld().addEntity(bullet2);
+                    FXGL.getGameWorld().addEntity(bullet3);
+                    FXGL.getGameWorld().addEntity(bullet4);
 
+                }
 
 
                 if (type != null && type.equals("void")) {

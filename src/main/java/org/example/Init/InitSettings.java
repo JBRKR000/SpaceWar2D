@@ -70,8 +70,8 @@ public class InitSettings extends GameApplication {
     public static boolean isDebugEnabled = false;
     private Entity player;
     private static boolean godmode = false;
-    public static int wave = 1;  // Current wave
-    public static int enemiesToDestroy = 10;  // Enemies to defeat per wave (adjustable)
+    public static int wave = 1;
+    public static int enemiesToDestroy = 10;
     public static int enemiesDefeated = 0;
     public static int enemyCount = 0;
     private final BulletSpawner bulletSpawner = new BulletSpawner();
@@ -84,7 +84,7 @@ public class InitSettings extends GameApplication {
     public int bonus;
     public static boolean spacebarPressed = false;
     public static Integer powerup = 0;
-    public static Integer powerupCounter = 10;
+    public static Integer powerupCounter = 1;
     private static boolean hitsoundEnabled = false;
     private final HighScoreManager highScoreManager = new HighScoreManager();
     private static final int SHAKE_POWER = 5;
@@ -603,19 +603,6 @@ public class InitSettings extends GameApplication {
             }
             return Unit.INSTANCE;
         });
-        onKeyDown(KeyCode.F3, () -> {
-            FXGL.getGameController().pauseEngine();
-            System.out.println("ENGINE IS PAUSED");
-            return Unit.INSTANCE;
-        });
-        onKeyDown(KeyCode.F4, () -> {
-            System.out.println("ENGINE IS RESUMED");
-            FXGL.getGameController().resumeEngine();
-            return Unit.INSTANCE;
-        });
-        onKeyDown(KeyCode.X, () -> {
-            player.getComponent(PlayerComponent.class).usePowerRocket();
-        });
     }
 
     private void checkPowerup() {
@@ -671,6 +658,8 @@ public class InitSettings extends GameApplication {
         FXGL.getGameWorld().addEntityFactory(new BetaBullet());
         FXGL.getGameWorld().addEntityFactory(new Bull());
         FXGL.getGameWorld().addEntityFactory(new BullBullet());
+        FXGL.getGameWorld().addEntityFactory(new Core());
+        FXGL.getGameWorld().addEntityFactory(new CoreBullet());
         player = FXGL.spawn("player", (double) FXGL.getAppWidth() / 2 - 45, 500);
 
         FXGL.getGameTimer().runOnceAfter(() -> {
@@ -747,7 +736,7 @@ public class InitSettings extends GameApplication {
         run(bulletSpawner::spawnBulletsFromEnemies, Duration.seconds(3));
 
 
-        run(bulletSpawner::spawnBulletForBoss, Duration.seconds(FXGL.random(0.005, 1)));
+        run(bulletSpawner::spawnBulletForBoss, Duration.seconds(FXGL.random(0.05, 1.5)));
 
 
 

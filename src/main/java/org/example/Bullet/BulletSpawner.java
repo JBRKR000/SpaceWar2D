@@ -116,6 +116,18 @@ public class BulletSpawner {
                     FXGL.getGameWorld().addEntity(bullet);
 
                 }
+                if (type != null && type.equals("core")) {
+                    if (!enemy.hasComponent(RandomMoveComponent.class)) {
+                        enemy.addComponent(new RandomMoveComponent(new Rectangle2D(0, 0, FXGL.getAppWidth(), FXGL.getAppHeight() / 2), 100));
+                    }
+                    RandomMoveComponent moveComponent = enemy.getComponent(RandomMoveComponent.class);
+                    Entity bullet = FXGL.getGameWorld().create("core_bullet", new SpawnData(enemy.getX() + 25, enemy.getY() + 40).put("angle", 0));
+                    FXGL.play("core.wav");
+                    bullet.setScaleX(1.1);
+                    bullet.setScaleY(1.1);
+                    FXGL.getGameWorld().addEntity(bullet);
+
+                }
                 if (type != null && type.equals("bull")) {
                     if (!enemy.hasComponent(RandomMoveComponent.class)) {
                         enemy.addComponent(new RandomMoveComponent(new Rectangle2D(0, 0, FXGL.getAppWidth(), FXGL.getAppHeight() / 2), 100));
@@ -230,15 +242,17 @@ public class BulletSpawner {
             FXGL.getGameTimer().runOnceAfter(() -> {
                 String type = enemies.get(enemy);
                 if (type != null && type.equals("boss_1")) {
-                    int random = FXGL.random(1, 6);
+                    int random = FXGL.random(1, 7);
                     if (FXGL.getGameWorld().getEntities().contains(enemy)) {
                         switch (random) {
                             case 1:
-                                Entity bullet = FXGL.getGameWorld().create("eclipse_bullet", new SpawnData(enemy.getX() + 75, enemy.getY() + 120).put("angle", 0));
-                                FXGL.play("ECLIPSE.wav");
+                                Entity bullet = FXGL.getGameWorld().create("bull_bullet", new SpawnData(enemy.getX() + 75, enemy.getY() + 120).put("angle", 0));
+                                FXGL.play("bull_bullet.wav");
                                 bullet.setScaleX(1.1);
                                 bullet.setScaleY(1.1);
-                                FXGL.getGameWorld().addEntity(bullet);
+                                if(FXGL.random(0,10) > 5){
+                                    FXGL.getGameWorld().addEntity(bullet);
+                                }
                                 break;
                             case 5:
                                 Entity bullet5= FXGL.getGameWorld().create("faker_bullet", new SpawnData(enemy.getX() + 75, enemy.getY() + 120).put("angle", 0));
@@ -264,8 +278,8 @@ public class BulletSpawner {
                                 break;
                             case 3:
                                 if(enemy.getComponent(RandomMoveComponent.class).getMoveSpeed() < 45){
-                                    Entity bullet3 = FXGL.getGameWorld().create("void_laser", new SpawnData(enemy.getX() + 80, enemy.getY() + 160).put("angle", 0));
-                                    FXGL.play("void_laser.wav");
+                                    Entity bullet3 = FXGL.getGameWorld().create("core_bullet", new SpawnData(enemy.getX() + 80, enemy.getY() + 160).put("angle", 0));
+                                    FXGL.play("core.wav");
                                     bullet3.setScaleX(1.1);
                                     bullet3.setScaleY(1.1);
                                     FXGL.getGameWorld().addEntity(bullet3);
@@ -295,7 +309,7 @@ public class BulletSpawner {
 
                     }
                 }
-            }, Duration.seconds(FXGL.random(1, 2)));
+            }, Duration.seconds(1));
         }
 
     }

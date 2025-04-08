@@ -873,17 +873,7 @@ public class InitSettings extends GameApplication {
                 healthBar.setFill(Color.RED);
                 if (pulsateTimeline.getStatus() != Animation.Status.RUNNING) {
                     pulsateTimeline.play();
-                    AudioPlayer audioPlayer = new AudioPlayer();
-                    Path heartbeat = Paths.get("src/main/resources/assets/sounds/HeartBeat.wav");
-                    try {
-                        URL url = heartbeat.toUri().toURL();
-                        Audio audio = audioPlayer.loadAudio(AudioType.SOUND, url, false);
-                        audio.setVolume(0.1);
-                        audio.play();
-                        FXGL.runOnce(audio::stop, Duration.seconds(3));
-                    } catch (MalformedURLException e) {
-                        throw new RuntimeException(e);
-                    }
+                    FXGL.runOnce(()->FXGL.play("HeartBeat.wav"), Duration.seconds(3));
                 }
             } else {
                 healthBar.setFill(Color.GREEN);

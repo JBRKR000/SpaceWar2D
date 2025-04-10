@@ -115,8 +115,10 @@ public class InitSettings extends GameApplication {
         FXGL.getSceneService().pushSubScene(new EndGameScene(finalScore));
         FXGL.getDialogService().showInputBox("Gratulacje! Wpisz swój nick", playerName -> {
             highScoreManager.writeHighScore(playerName, finalScore);
+            resetGameState();
         });
     }
+
     private void endGameState() {
         int finalScore = FXGL.geti("score");
         currentMusic.getAudio().stop();
@@ -125,8 +127,11 @@ public class InitSettings extends GameApplication {
                 "Wave reached: " + wave + "\n" +
                 "Enter your name to save high score";
         FXGL.play("death_music.wav");
+
         FXGL.getDialogService().showInputBox(message, playerName -> {
             highScoreManager.writeHighScore(playerName, finalScore);
+
+            resetGameState();
             FXGL.getGameController().gotoMainMenu();
         });
     }
@@ -173,6 +178,43 @@ public class InitSettings extends GameApplication {
     }
 
 
+
+    private void resetGameState() {
+        wave = 1;
+        enemiesToDestroy = 10;
+        enemiesDefeated = 0;
+        enemyCount = 0;
+        spacebarPressed = false;
+        isCoinSpawned = false;
+        isHealthSpawned = false;
+        isEnemySpawned = false;
+        isPowerupSpawned = false;
+        powerup = 0;
+        powerupCounter = 1;
+        godmode = false;
+        hitsoundEnabled = false;
+        bulletSpawner.clearEnemies();
+        if (currentMusic != null) {
+            FXGL.getAudioPlayer().stopMusic(currentMusic);
+        }
+        currentMusicFile = "";
+        if (player != null && player.isActive()) {
+            PlayerComponent playerComponent = player.getComponent(PlayerComponent.class);
+            if (playerComponent != null && playerComponent.shootingTimerAction != null) {
+                playerComponent.shootingTimerAction.expire();
+            }
+            player.removeFromWorld();
+        }
+        FXGL.getGameWorld().getEntitiesByType(
+                EntityType.ENEMY,
+                EntityType.ENEMY_BULLET,
+                EntityType.COIN,
+                EntityType.HEALTH,
+                EntityType.POWERUP,
+                EntityType.BONUS,
+                EntityType.PLAYER_BULLET
+        ).forEach(Entity::removeFromWorld);
+    }
 
 
     private static String currentMusicFile = "";
@@ -385,8 +427,6 @@ public class InitSettings extends GameApplication {
                         player.removeFromWorld();
                         bullet.removeFromWorld();
                         endGameState();
-                        enemyCount = 0;
-                        wave = 1;
                     }
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -414,8 +454,6 @@ public class InitSettings extends GameApplication {
                         player.removeFromWorld();
                         faker_bullet.removeFromWorld();
                         endGameState();
-                        enemyCount = 0;
-                        wave = 1;
                     }
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -581,29 +619,42 @@ public class InitSettings extends GameApplication {
     @Override
     protected void initInput() {
         onKey(KeyCode.D, () -> {
-            player.getComponent(PlayerComponent.class).moveRight();
+            if (player != null && player.hasComponent(PlayerComponent.class)) {
+                player.getComponent(PlayerComponent.class).moveRight();
+            }
             return Unit.INSTANCE;
         });
+
         onKey(KeyCode.A, () -> {
-            player.getComponent(PlayerComponent.class).moveLeft();
+            if (player != null && player.hasComponent(PlayerComponent.class)) {
+                player.getComponent(PlayerComponent.class).moveLeft();
+            }
             return Unit.INSTANCE;
         });
+
         onKey(KeyCode.W, () -> {
-            player.getComponent(PlayerComponent.class).moveDown();
+            if (player != null && player.hasComponent(PlayerComponent.class)) {
+                player.getComponent(PlayerComponent.class).moveDown();
+            }
             return Unit.INSTANCE;
         });
+
         onKey(KeyCode.S, () -> {
-            player.getComponent(PlayerComponent.class).moveUp();
+            if (player != null && player.hasComponent(PlayerComponent.class)) {
+                player.getComponent(PlayerComponent.class).moveUp();
+            }
             return Unit.INSTANCE;
         });
+
         onKeyDown(KeyCode.SPACE, () -> {
-            if (!spacebarPressed) {
+            if (player != null && player.hasComponent(PlayerComponent.class) && !spacebarPressed) {
                 spacebarPressed = true;
                 player.getComponent(PlayerComponent.class).shoot();
             }
             return Unit.INSTANCE;
         });
     }
+
 
     private void checkPowerup() {
 
@@ -620,10 +671,8 @@ public class InitSettings extends GameApplication {
     @Override
     protected void initGame() {
 
+        resetGameState();
         run(this::checkWaveChange, Duration.seconds(1));
-
-
-
         addBackground();
         Random random = new Random();
         FXGL.getSettings().setGlobalSoundVolume(0.1);
@@ -661,13 +710,12 @@ public class InitSettings extends GameApplication {
         FXGL.getGameWorld().addEntityFactory(new Core());
         FXGL.getGameWorld().addEntityFactory(new CoreBullet());
         player = FXGL.spawn("player", (double) FXGL.getAppWidth() / 2 - 45, 500);
-
         FXGL.getGameTimer().runOnceAfter(() -> {
             FXGL.getDialogService().showMessageBox("Wave " + wave + " Started!");
 
             FXGL.play("dialog.wav");
         }, Duration.seconds(0.5));
-
+        playMusicForWave(wave);
         run(() -> {
 
             if (wave != 10) {

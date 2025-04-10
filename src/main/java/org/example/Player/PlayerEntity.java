@@ -14,7 +14,7 @@ import org.example.Other.EntityType;
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
 
 public class PlayerEntity implements EntityFactory {
-    private static final int MAX_HP = 20;
+    private static final int MAX_HP = 1;
     public static int currentHP = MAX_HP;
     public static int hp_;
     public static double p_x;

@@ -313,4 +313,8 @@ public class BulletSpawner {
         }
 
     }
+    public void clearEnemies() {
+        enemies.clear();
+    }
+
 }

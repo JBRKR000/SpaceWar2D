@@ -6,6 +6,7 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
+import com.almasb.fxgl.time.TimerAction;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
@@ -20,6 +21,7 @@ public class PlayerComponent extends Component {
     private AnimationChannel idle, moveLeft, moveRight;
     private double prevX, prevY;
     private double speed = 10;
+    public TimerAction shootingTimerAction;
 
     public void setMovementSpeed(double speed) {
         this.speed = speed;
@@ -82,7 +84,9 @@ public class PlayerComponent extends Component {
     }
 
     public void shoot() {
-        FXGL.run(this::spawnShoot, Duration.seconds(shootInterval.get()));
+        if (shootingTimerAction == null || shootingTimerAction.isExpired()) {
+            shootingTimerAction = FXGL.run(this::spawnShoot, Duration.seconds(shootInterval.get()));
+        }
     }
 
     //HOW FAST THE PLAYER CAN SHOOT

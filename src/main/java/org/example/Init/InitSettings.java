@@ -84,7 +84,7 @@ public class InitSettings extends GameApplication {
     public int bonus;
     public static boolean spacebarPressed = false;
     public static Integer powerup = 0;
-    public static Integer powerupCounter = 1;
+    public static Integer powerupCounter = 10;
     private static boolean hitsoundEnabled = false;
     private final HighScoreManager highScoreManager = new HighScoreManager();
     private static final int SHAKE_POWER = 5;
@@ -180,7 +180,7 @@ public class InitSettings extends GameApplication {
 
 
     private void resetGameState() {
-        wave = 1;
+        wave = 10;
         enemiesToDestroy = 10;
         enemiesDefeated = 0;
         enemyCount = 0;
@@ -190,7 +190,7 @@ public class InitSettings extends GameApplication {
         isEnemySpawned = false;
         isPowerupSpawned = false;
         powerup = 0;
-        powerupCounter = 1;
+        powerupCounter = 10;
         godmode = false;
         hitsoundEnabled = false;
         bulletSpawner.clearEnemies();
@@ -331,7 +331,6 @@ public class InitSettings extends GameApplication {
                         isHealthSpawned = true;
                     }
                 }
-
                 bullet.removeFromWorld();
                 switch (powerupCounter) {
                     case 1:
@@ -367,8 +366,6 @@ public class InitSettings extends GameApplication {
                     default:
                         break;
                 }
-
-
                 if (!hitsoundEnabled) {
                     FXGL.play("enemy_hit.wav");
                     hitsoundEnabled = true;
